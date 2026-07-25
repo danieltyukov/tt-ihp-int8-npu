@@ -76,9 +76,7 @@ async def test_capture_dataflow(dut):
                       for c in range(cols)] for r in range(rows)],
             "w_reg": [[to_signed(int(pes[r][c].w_reg.value), 8)
                        for c in range(cols)] for r in range(rows)],
-            "col_valid": [int(core.g_bank[c].col_valid.value)
-                          if hasattr(core, "g_bank") else 0
-                          for c in range(cols)],
+            "col_valid": int(core.col_valid.value),
         })
         if state == 2:      # ST_REQ: the array has drained
             break

@@ -1,0 +1,43 @@
+{
+  "cells": {
+    "sg13g2_a21o_1": 20,
+    "sg13g2_a21oi_1": 132,
+    "sg13g2_a221oi_1": 24,
+    "sg13g2_a22oi_1": 44,
+    "sg13g2_and2_1": 7,
+    "sg13g2_and3_1": 11,
+    "sg13g2_dfrbpq_1": 69,
+    "sg13g2_inv_1": 66,
+    "sg13g2_mux2_1": 6,
+    "sg13g2_nand2_1": 39,
+    "sg13g2_nand2b_1": 9,
+    "sg13g2_nand3_1": 13,
+    "sg13g2_nand3b_1": 3,
+    "sg13g2_nand4_1": 5,
+    "sg13g2_nor2_1": 50,
+    "sg13g2_nor2b_1": 7,
+    "sg13g2_nor3_1": 4,
+    "sg13g2_nor4_1": 8,
+    "sg13g2_o21ai_1": 105,
+    "sg13g2_or2_1": 12,
+    "sg13g2_xnor2_1": 50,
+    "sg13g2_xor2_1": 9
+  },
+  "cell_count": 693,
+  "area_um2": 9371.5272,
+  "logic_depth": 29,
+  "wires": 645,
+  "flop_count": 69,
+  "blackboxes": [],
+  "latches": [],
+  "name": "block_requant",
+  "top": "npu_requant",
+  "params": {
+    "T_W": 24,
+    "M_W": 16,
+    "SH_W": 5,
+    "ADD_ARCH": 4
+  },
+  "effort": "full",
+  "liberty": "sg13g2_stdcell_typ_1p20V_25C.lib"
+}

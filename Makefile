@@ -87,3 +87,19 @@ images: $(VENV_OK)
 clean:
 	rm -rf build test/sim_build test/results*.xml test/*.fst
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
+
+.PHONY: readme
+readme: $(VENV_OK)
+	$(PY) scripts/fill_readme.py
+
+.PHONY: sta
+sta:
+	@mkdir -p build docs/synth
+	printf 'set period 25.0\n' > build/sta_config.tcl
+	sta -no_splash -exit scripts/sta.tcl | grep -vE "unsupported expression|Warning 503" \
+	  > docs/synth/sta_typ.txt
+	printf 'set period 25.0\nset corner "sg13g2_stdcell_slow_1p08V_125C"\n' > build/sta_config.tcl
+	sta -no_splash -exit scripts/sta.tcl | grep -vE "unsupported expression|Warning 503" \
+	  > docs/synth/sta_slow.txt
+	@rm -f build/sta_config.tcl
+	@grep -H "worst slack" docs/synth/sta_*.txt

@@ -1,0 +1,1180 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Running command `read_liberty -lib /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib; read_verilog -sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_activation.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_array.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_core.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_host_if.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_mult.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pe.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_baugh_wooley.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_requant.sv /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/tt_um_danieltyukov_int8_npu.sv; chparam -set A_W 8 -set B_W 8 -set MUL_ARCH 2 -set ADD_ARCH 4 npu_mult; hierarchy -top npu_mult -check; synth -top npu_mult -flatten; check -assert; design -save prepped; abc -fast -liberty /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib; setundef -zero; opt_clean -purge; ltp -noff; design -load prepped; dfflibmap -liberty /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib; abc -fast -liberty /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib; setundef -zero; opt_clean -purge; stat -liberty /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib' --
+
+1. Executing Liberty frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib
+Imported 84 cell types from liberty file.
+
+2. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_activation.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_activation.sv' to AST representation.
+Generating RTLIL representation for module `\npu_activation'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv' to AST representation.
+Generating RTLIL representation for module `\npu_adder'.
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_array.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_array.sv' to AST representation.
+Generating RTLIL representation for module `\npu_array'.
+Successfully finished Verilog frontend.
+
+5. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_core.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_core.sv' to AST representation.
+Generating RTLIL representation for module `\npu_core'.
+Successfully finished Verilog frontend.
+
+6. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv' to AST representation.
+Generating RTLIL representation for module `\npu_csa_reduce'.
+Successfully finished Verilog frontend.
+
+7. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_host_if.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_host_if.sv' to AST representation.
+Generating RTLIL representation for module `\npu_host_if'.
+Successfully finished Verilog frontend.
+
+8. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_mult.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_mult.sv' to AST representation.
+Generating RTLIL representation for module `\npu_mult'.
+Successfully finished Verilog frontend.
+
+9. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pe.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pe.sv' to AST representation.
+Generating RTLIL representation for module `\npu_pe'.
+Successfully finished Verilog frontend.
+
+10. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_baugh_wooley.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_baugh_wooley.sv' to AST representation.
+Generating RTLIL representation for module `\npu_pp_baugh_wooley'.
+Successfully finished Verilog frontend.
+
+11. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv' to AST representation.
+Generating RTLIL representation for module `\npu_pp_booth4'.
+Successfully finished Verilog frontend.
+
+12. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_requant.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_requant.sv' to AST representation.
+Generating RTLIL representation for module `\npu_requant'.
+Successfully finished Verilog frontend.
+
+13. Executing Verilog-2005 frontend: /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/tt_um_danieltyukov_int8_npu.sv
+Parsing SystemVerilog input from `/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/tt_um_danieltyukov_int8_npu.sv' to AST representation.
+Generating RTLIL representation for module `\tt_um_danieltyukov_int8_npu'.
+Successfully finished Verilog frontend.
+Parameter \A_W = 8
+Parameter \B_W = 8
+Parameter \MUL_ARCH = 2
+Parameter \ADD_ARCH = 4
+
+14. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_mult'.
+Parameter \A_W = 8
+Parameter \B_W = 8
+Parameter \MUL_ARCH = 2
+Parameter \ADD_ARCH = 4
+Generating RTLIL representation for module `$paramod$d9d94492cfd12c534060eb49ea652e75da4f906a\npu_mult'.
+
+15. Executing HIERARCHY pass (managing design hierarchy).
+
+15.1. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     \npu_adder
+Used module:     \npu_pp_booth4
+Used module:     \npu_csa_reduce
+Parameter \WIDTH = 16
+Parameter \N = 3
+
+15.2. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \N = 3
+Generating RTLIL representation for module `$paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \ARCH = 4
+
+15.3. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_adder'.
+Parameter \WIDTH = 16
+Parameter \ARCH = 4
+Generating RTLIL representation for module `$paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder'.
+Parameter \A_W = 8
+Parameter \B_W = 8
+
+15.4. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_pp_booth4'.
+Parameter \A_W = 8
+Parameter \B_W = 8
+Generating RTLIL representation for module `$paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4'.
+Parameter \WIDTH = 16
+Parameter \N = 6
+
+15.5. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \N = 6
+Generating RTLIL representation for module `$paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce'.
+
+15.6. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         \npu_csa_reduce
+Used module:             $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Parameter \WIDTH = 16
+Parameter \N = 2
+
+15.7. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \N = 2
+Generating RTLIL representation for module `$paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \N = 4
+
+15.8. Executing AST frontend in derive mode using pre-parsed AST for module `\npu_csa_reduce'.
+Parameter \WIDTH = 16
+Parameter \N = 4
+Generating RTLIL representation for module `$paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce'.
+
+15.9. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce
+Used module:             \npu_csa_reduce
+Used module:                 $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Used module:                     $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce
+Parameter \WIDTH = 16
+Parameter \N = 3
+Found cached RTLIL representation for module `$paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce'.
+
+15.10. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce
+Used module:             $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Used module:                 $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce
+
+15.11. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce
+Used module:             $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Used module:                 $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce
+Removing unused module `\tt_um_danieltyukov_int8_npu'.
+Removing unused module `\npu_requant'.
+Removing unused module `\npu_pp_booth4'.
+Removing unused module `\npu_pp_baugh_wooley'.
+Removing unused module `\npu_pe'.
+Removing unused module `\npu_host_if'.
+Removing unused module `\npu_csa_reduce'.
+Removing unused module `\npu_core'.
+Removing unused module `\npu_array'.
+Removing unused module `\npu_adder'.
+Removing unused module `\npu_activation'.
+Removed 11 unused modules.
+
+16. Executing SYNTH pass.
+
+16.1. Executing HIERARCHY pass (managing design hierarchy).
+
+16.1.1. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce
+Used module:             $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Used module:                 $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce
+
+16.1.2. Analyzing design hierarchy..
+Top module:  \npu_mult
+Used module:     $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder
+Used module:     $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4
+Used module:     $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce
+Used module:         $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce
+Used module:             $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce
+Used module:                 $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce
+Removed 0 unused modules.
+
+16.2. Executing PROC pass (convert processes to netlists).
+
+16.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 1 empty switch in `\npu_mult.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_mult.sv:0$586'.
+Removing empty process `npu_mult.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_mult.sv:0$586'.
+Found and cleaned up 1 empty switch in `$paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$594'.
+Removing empty process `$paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$594'.
+Found and cleaned up 1 empty switch in `$paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$787'.
+Removing empty process `$paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$787'.
+Found and cleaned up 1 empty switch in `$paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$779'.
+Removing empty process `$paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$779'.
+Found and cleaned up 1 empty switch in `$paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$778'.
+Removing empty process `$paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:0$778'.
+Found and cleaned up 1 empty switch in `$paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:0$763'.
+Removing empty process `$paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:0$763'.
+Found and cleaned up 2 empty switches in `$paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv:0$697'.
+Removing empty process `$paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder.$proc$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv:0$697'.
+Cleaned up 8 empty switches.
+
+16.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Removed a total of 0 dead cases.
+
+16.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 0 assignments to connections.
+
+16.2.4. Executing PROC_INIT pass (extract init attributes).
+
+16.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+16.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+
+16.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+
+16.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+16.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+
+16.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+16.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+16.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~1 debug messages>
+Optimizing module $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce.
+Optimizing module $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce.
+Optimizing module $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce.
+Optimizing module $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce.
+Optimizing module $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4.
+<suppressed ~16 debug messages>
+Optimizing module $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder.
+<suppressed ~1 debug messages>
+
+16.3. Executing FLATTEN pass (flatten design).
+Deleting now unused module $paramod$17604f602797e3202e357decf915a5bc29aa0ca3\npu_csa_reduce.
+Deleting now unused module $paramod$c023b5faa9c785d07331b76839e06bd1ab774764\npu_csa_reduce.
+Deleting now unused module $paramod$1eb2e9d021a26f5457ad6970e0ac2d330aaa366a\npu_csa_reduce.
+Deleting now unused module $paramod$2b1d745c338a0a6e50bcd9a4dc82bdf12badc2b0\npu_csa_reduce.
+Deleting now unused module $paramod$1ed99f1253f88f2664ca886b8b7f7f8ea7f768dd\npu_pp_booth4.
+Deleting now unused module $paramod$29b69393125ca7ee80b32022bd2decdec691949f\npu_adder.
+<suppressed ~6 debug messages>
+
+16.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~5 debug messages>
+
+16.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 31 unused cells and 124 unused wires.
+<suppressed ~34 debug messages>
+
+16.6. Executing CHECK pass (checking for obvious problems).
+Checking module npu_mult...
+Found and reported 0 problems.
+
+16.7. Executing OPT pass (performing simple optimizations).
+
+16.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+<suppressed ~6 debug messages>
+Removed a total of 2 cells.
+
+16.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.7.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.7.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+16.7.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.7.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+16.7.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.7.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.7.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.7.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.7.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.7.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.7.16. Finished OPT passes. (There is nothing left to do.)
+
+16.8. Executing FSM pass (extract and optimize FSM).
+
+16.8.1. Executing FSM_DETECT pass (finding FSMs in design).
+
+16.8.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+
+16.8.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+16.8.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.8.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+
+16.8.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+
+16.8.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+16.8.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+
+16.9. Executing OPT pass (performing simple optimizations).
+
+16.9.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.9.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.9.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.9.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.9.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.9.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.9.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.9.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.9.9. Finished OPT passes. (There is nothing left to do.)
+
+16.10. Executing WREDUCE pass (reducing word size of cells).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$770 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$770 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$770 ($or).
+Removed top 7 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:49$772 ($xor).
+Removed top 7 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$774 ($and).
+Removed top 7 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$776 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$777 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$777 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$777 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$593 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$593 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$593 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$786 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$786 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$786 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$785 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$785 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$785 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$784 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$784 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$784 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$783 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$783 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$783 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$782 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$782 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$782 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\u_cpa.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv:60$596 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\u_cpa.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv:60$596 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\u_cpa.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_adder.sv:60$596 ($and).
+Removed top 6 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$748 ($xor).
+Removed top 6 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$748 ($xor).
+Removed top 6 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$748 ($xor).
+Removed top 2 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$722 ($xor).
+Removed top 2 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$722 ($xor).
+Removed top 2 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$722 ($xor).
+Removed top 4 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$735 ($xor).
+Removed top 4 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$735 ($xor).
+Removed top 4 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_pp.$xor$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:52$735 ($xor).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$768 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$768 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$768 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$769 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$769 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$769 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$775 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$775 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$775 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$776 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$776 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$591 ($or).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$591 ($or).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$591 ($or).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$592 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$592 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$592 ($and).
+Removed top 6 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$747 ($mux).
+Removed top 2 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$721 ($mux).
+Removed top 4 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$734 ($mux).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$766 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$766 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$766 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$767 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$767 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$767 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$773 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$773 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$773 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$774 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$774 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$589 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$589 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$589 ($and).
+Removed top 1 bits (of 16) from port Y of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$590 ($and).
+Removed top 1 bits (of 16) from port A of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$590 ($and).
+Removed top 1 bits (of 16) from port B of cell npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$590 ($and).
+Removed top 2 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$720 ($mux).
+Removed top 4 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$733 ($mux).
+Removed top 6 bits (of 16) from mux cell npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$746 ($mux).
+Removed top 2 bits (of 16) from wire npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$720_Y.
+Removed top 4 bits (of 16) from wire npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$733_Y.
+Removed top 6 bits (of 16) from wire npu_mult.$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$746_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$766_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$769_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$774_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$776_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$768_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$782_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$783_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$785_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$589_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$and$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$592_Y.
+Removed top 1 bits (of 16) from wire npu_mult.$flatten\g_booth.u_tree.\genblk1.g_reduce.u_next.\genblk1.g_reduce.u_next.$or$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_csa_reduce.sv:53$591_Y.
+Removed top 7 bits (of 96) from wire npu_mult.g_booth.rows.
+
+16.11. Executing PEEPOPT pass (run peephole optimizers).
+
+16.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 15 unused wires.
+<suppressed ~1 debug messages>
+
+16.13. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module npu_mult:
+  created 0 $alu and 0 $macc cells.
+
+16.14. Executing SHARE pass (SAT-based resource sharing).
+
+16.15. Executing OPT pass (performing simple optimizations).
+
+16.15.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.15.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.15.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.15.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.15.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.15.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.15.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.15.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.15.9. Finished OPT passes. (There is nothing left to do.)
+
+16.16. Executing MEMORY pass.
+
+16.16.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+16.16.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+16.16.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+16.16.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+16.16.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+16.16.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.16.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+16.16.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+16.16.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.16.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+16.17. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.18. Executing OPT pass (performing simple optimizations).
+
+16.18.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~394 debug messages>
+
+16.18.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.18.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.18.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 3 unused cells and 116 unused wires.
+<suppressed ~4 debug messages>
+
+16.18.5. Finished fast OPT passes.
+
+16.19. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+16.20. Executing OPT pass (performing simple optimizations).
+
+16.20.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~3 debug messages>
+
+16.20.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.20.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.20.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707:
+      Old ports: A=16'0000000000000000, B={ \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a }, Y=$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y
+      New ports: A=8'00000000, B=\a, Y=$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7:0]
+      New connections: $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [15:8] = { $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$720:
+      Old ports: A=14'00000000000000, B={ \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a }, Y=$auto$wreduce.cc:461:run$788 [13:0]
+      New ports: A=8'00000000, B=\a, Y=$auto$wreduce.cc:461:run$788 [7:0]
+      New connections: $auto$wreduce.cc:461:run$788 [13:8] = { $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$733:
+      Old ports: A=12'000000000000, B={ \a [7] \a [7] \a [7] \a [7] \a }, Y=$auto$wreduce.cc:461:run$789 [11:0]
+      New ports: A=8'00000000, B=\a, Y=$auto$wreduce.cc:461:run$789 [7:0]
+      New connections: $auto$wreduce.cc:461:run$789 [11:8] = { $auto$wreduce.cc:461:run$789 [7] $auto$wreduce.cc:461:run$789 [7] $auto$wreduce.cc:461:run$789 [7] $auto$wreduce.cc:461:run$789 [7] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$746:
+      Old ports: A=10'0000000000, B={ \a [7] \a [7] \a }, Y=$auto$wreduce.cc:461:run$790 [9:0]
+      New ports: A=8'00000000, B=\a, Y=$auto$wreduce.cc:461:run$790 [7:0]
+      New connections: $auto$wreduce.cc:461:run$790 [9:8] = { $auto$wreduce.cc:461:run$790 [7] $auto$wreduce.cc:461:run$790 [7] }
+  Optimizing cells in module \npu_mult.
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$708:
+      Old ports: A=$flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y, B={ \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a [7] \a 1'0 }, Y=\g_booth.u_pp.g_dig[0].mag
+      New ports: A={ $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7] $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:48$707_Y [7:0] }, B={ \a 1'0 }, Y=\g_booth.u_pp.g_dig[0].mag [8:0]
+      New connections: \g_booth.u_pp.g_dig[0].mag [15:9] = { \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] \g_booth.u_pp.g_dig[0].mag [8] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$721:
+      Old ports: A=$auto$wreduce.cc:461:run$788 [13:0], B={ \a [7] \a [7] \a [7] \a [7] \a [7] \a 1'0 }, Y=\g_booth.u_pp.g_dig[1].mag [13:0]
+      New ports: A={ $auto$wreduce.cc:461:run$788 [7] $auto$wreduce.cc:461:run$788 [7:0] }, B={ \a 1'0 }, Y=\g_booth.u_pp.g_dig[1].mag [8:0]
+      New connections: \g_booth.u_pp.g_dig[1].mag [13:9] = { \g_booth.u_pp.g_dig[1].mag [8] \g_booth.u_pp.g_dig[1].mag [8] \g_booth.u_pp.g_dig[1].mag [8] \g_booth.u_pp.g_dig[1].mag [8] \g_booth.u_pp.g_dig[1].mag [8] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$734:
+      Old ports: A=$auto$wreduce.cc:461:run$789 [11:0], B={ \a [7] \a [7] \a [7] \a 1'0 }, Y=\g_booth.u_pp.g_dig[2].mag [11:0]
+      New ports: A={ $auto$wreduce.cc:461:run$789 [7] $auto$wreduce.cc:461:run$789 [7:0] }, B={ \a 1'0 }, Y=\g_booth.u_pp.g_dig[2].mag [8:0]
+      New connections: \g_booth.u_pp.g_dig[2].mag [11:9] = { \g_booth.u_pp.g_dig[2].mag [8] \g_booth.u_pp.g_dig[2].mag [8] \g_booth.u_pp.g_dig[2].mag [8] }
+    Consolidated identical input bits for $mux cell $flatten\g_booth.u_pp.$ternary$/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/src/npu_pp_booth4.sv:47$747:
+      Old ports: A=$auto$wreduce.cc:461:run$790 [9:0], B={ \a [7] \a 1'0 }, Y=\g_booth.u_pp.g_dig[3].mag [9:0]
+      New ports: A={ $auto$wreduce.cc:461:run$790 [7] $auto$wreduce.cc:461:run$790 [7:0] }, B={ \a 1'0 }, Y=\g_booth.u_pp.g_dig[3].mag [8:0]
+      New connections: \g_booth.u_pp.g_dig[3].mag [9] = \g_booth.u_pp.g_dig[3].mag [8]
+  Optimizing cells in module \npu_mult.
+Performed a total of 8 changes.
+
+16.20.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.20.6. Executing OPT_SHARE pass.
+
+16.20.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.20.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.20.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~60 debug messages>
+
+16.20.10. Rerunning OPT passes. (Maybe there is more to do..)
+
+16.20.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.20.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.20.13. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.20.14. Executing OPT_SHARE pass.
+
+16.20.15. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.20.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 15 unused wires.
+<suppressed ~1 debug messages>
+
+16.20.17. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.20.18. Rerunning OPT passes. (Maybe there is more to do..)
+
+16.20.19. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \npu_mult..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~4 debug messages>
+
+16.20.20. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \npu_mult.
+Performed a total of 0 changes.
+
+16.20.21. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+Removed a total of 0 cells.
+
+16.20.22. Executing OPT_SHARE pass.
+
+16.20.23. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.20.24. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+
+16.20.25. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.20.26. Finished OPT passes. (There is nothing left to do.)
+
+16.21. Executing TECHMAP pass (map to technology primitives).
+
+16.21.1. Executing Verilog-2005 frontend: /usr/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/usr/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `\$__div_mod_u'.
+Generating RTLIL representation for module `\$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `\$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_pmux'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Successfully finished Verilog frontend.
+
+16.21.2. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $xor.
+Using extmapper simplemap for cells of type $and.
+Using extmapper simplemap for cells of type $or.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $not.
+No more expansions possible.
+<suppressed ~198 debug messages>
+
+16.22. Executing OPT pass (performing simple optimizations).
+
+16.22.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+
+16.22.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+<suppressed ~3 debug messages>
+Removed a total of 1 cells.
+
+16.22.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.22.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+16.22.5. Finished fast OPT passes.
+
+16.23. Executing ABC pass (technology mapping using ABC).
+
+16.23.1. Extracting gate netlist of module `\npu_mult' to `<abc-temp-dir>/input.blif'..
+Extracted 446 gates and 463 wires to a netlist network with 16 inputs and 16 outputs.
+
+16.23.1.1. Executing ABC.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC: 
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_library <abc-temp-dir>/stdcells.genlib 
+ABC: Entered genlib library with 13 gates from file "<abc-temp-dir>/stdcells.genlib".
+ABC: + strash 
+ABC: + dretime 
+ABC: + map 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+16.23.1.2. Re-integrating ABC results.
+ABC RESULTS:              NAND cells:        8
+ABC RESULTS:               NOT cells:       17
+ABC RESULTS:               MUX cells:       35
+ABC RESULTS:             ORNOT cells:       21
+ABC RESULTS:              XNOR cells:       30
+ABC RESULTS:                OR cells:       51
+ABC RESULTS:               NOR cells:       32
+ABC RESULTS:            ANDNOT cells:      142
+ABC RESULTS:               XOR cells:      104
+ABC RESULTS:               AND cells:        5
+ABC RESULTS:        internal signals:      431
+ABC RESULTS:           input signals:       16
+ABC RESULTS:          output signals:       16
+Removing temp directory.
+
+16.24. Executing OPT pass (performing simple optimizations).
+
+16.24.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module npu_mult.
+<suppressed ~3 debug messages>
+
+16.24.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\npu_mult'.
+<suppressed ~3 debug messages>
+Removed a total of 1 cells.
+
+16.24.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+16.24.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 104 unused wires.
+<suppressed ~8 debug messages>
+
+16.24.5. Finished fast OPT passes.
+
+16.25. Executing HIERARCHY pass (managing design hierarchy).
+
+16.25.1. Analyzing design hierarchy..
+Top module:  \npu_mult
+
+16.25.2. Analyzing design hierarchy..
+Top module:  \npu_mult
+Removed 0 unused modules.
+
+16.26. Printing statistics.
+
+=== npu_mult ===
+
+   Number of wires:                514
+   Number of wire bits:           2234
+   Number of public wires:          86
+   Number of public wire bits:    1806
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                444
+     $_ANDNOT_                     142
+     $_AND_                          4
+     $_MUX_                         35
+     $_NAND_                         8
+     $_NOR_                         32
+     $_NOT_                         17
+     $_ORNOT_                       21
+     $_OR_                          51
+     $_XNOR_                        30
+     $_XOR_                        104
+
+16.27. Executing CHECK pass (checking for obvious problems).
+Checking module npu_mult...
+Found and reported 0 problems.
+
+17. Executing CHECK pass (checking for obvious problems).
+Checking module npu_mult...
+Found and reported 0 problems.
+
+18. Executing ABC pass (technology mapping using ABC).
+
+18.1. Extracting gate netlist of module `\npu_mult' to `<abc-temp-dir>/input.blif'..
+Extracted 444 gates and 460 wires to a netlist network with 16 inputs and 16 outputs.
+
+18.1.1. Executing ABC.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC: 
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_lib -w /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib 
+ABC: Parsing finished successfully.  Parsing time =     0.02 sec
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_antennanp" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_decap_4" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_decap_8" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbpq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbpq_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhr_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhrq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dllr_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dllrq_1".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_2".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_4".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_8".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_2".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_4".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_8".
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_1" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_2" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_4" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_8" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_lgcp_1" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfbbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbpq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbpq_2".
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_sighold" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_slgcp_1" due to dont_use attribute.
+ABC: Library "sg13g2_stdcell_typ_1p20V_25C" from "/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib" has 54 cells (20 skipped: 14 seq; 6 tri-state; 0 no func; 10 dont_use).  Time =     0.03 sec
+ABC: Memory =    2.86 MB. Time =     0.03 sec
+ABC: + strash 
+ABC: + dretime 
+ABC: + map 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+18.1.2. Re-integrating ABC results.
+ABC RESULTS:     sg13g2_xor2_1 cells:        5
+ABC RESULTS:   sg13g2_nand2b_1 cells:        4
+ABC RESULTS:   sg13g2_nand3b_1 cells:       16
+ABC RESULTS:    sg13g2_a22oi_1 cells:       12
+ABC RESULTS:     sg13g2_and3_1 cells:        2
+ABC RESULTS:     sg13g2_nor4_1 cells:        6
+ABC RESULTS:    sg13g2_nand4_1 cells:       17
+ABC RESULTS:     sg13g2_a21o_1 cells:        2
+ABC RESULTS:    sg13g2_xnor2_1 cells:       38
+ABC RESULTS:     sg13g2_nor3_1 cells:       95
+ABC RESULTS:    sg13g2_nor2b_1 cells:       11
+ABC RESULTS:     sg13g2_nor2_1 cells:       55
+ABC RESULTS:    sg13g2_nand3_1 cells:      108
+ABC RESULTS:    sg13g2_a21oi_1 cells:      127
+ABC RESULTS:      sg13g2_inv_1 cells:       76
+ABC RESULTS:    sg13g2_o21ai_1 cells:      119
+ABC RESULTS:    sg13g2_nand2_1 cells:       93
+ABC RESULTS:        internal signals:      428
+ABC RESULTS:           input signals:       16
+ABC RESULTS:          output signals:       16
+Removing temp directory.
+
+19. Executing SETUNDEF pass (replace undef values with defined constants).
+
+20. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 543 unused wires.
+<suppressed ~84 debug messages>
+
+21. Executing LTP pass (find longest path).
+
+Longest topological path in npu_mult (length=23):
+    0: \b [5]
+    1: $abc$1990$new_n87_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2045)
+    2: $abc$1990$new_n149_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2107)
+    3: $abc$1990$new_n151_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2109)
+    4: $abc$1990$new_n595_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2553)
+    5: $abc$1990$new_n671_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2629)
+    6: $abc$1990$new_n721_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2679)
+    7: $abc$1990$new_n722_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2680)
+    8: $abc$1990$new_n723_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2681)
+    9: $abc$1990$new_n729_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2687)
+   10: $abc$1990$new_n770_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2728)
+   11: $abc$1990$new_n774_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2732)
+   12: $abc$1990$new_n777_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2735)
+   13: $abc$1990$new_n779_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2737)
+   14: $abc$1990$new_n780_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2738)
+   15: $abc$1990$new_n781_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2739)
+   16: $abc$1990$new_n782_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2740)
+   17: $abc$1990$new_n785_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2743)
+   18: $abc$1990$new_n786_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2744)
+   19: $abc$1990$new_n787_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2745)
+   20: $abc$1990$new_n788_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2746)
+   21: $abc$1990$new_n815_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2773)
+   22: $abc$1990$new_n817_ (via $abc$1990$auto$blifparse.cc:386:parse_blif$2775)
+   23: \p [15] (via $abc$1990$auto$blifparse.cc:386:parse_blif$2776)
+
+22. Executing DFFLIBMAP pass (mapping DFF cells to sequential cells from liberty file).
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+  cell sg13g2_dfrbpq_1 (noninv, pins=4, area=48.99) is a direct match for cell type $_DFF_PN0_.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbp_2' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_1' - skipping.
+Warning: Found unsupported expression 'SCE*SCD+!SCE*D' in pin attribute of cell 'sg13g2_sdfrbpq_2' - skipping.
+  final dff cell mappings:
+    unmapped dff cell: $_DFF_N_
+    unmapped dff cell: $_DFF_P_
+    unmapped dff cell: $_DFF_NN0_
+    unmapped dff cell: $_DFF_NN1_
+    unmapped dff cell: $_DFF_NP0_
+    unmapped dff cell: $_DFF_NP1_
+    \sg13g2_dfrbpq_1 _DFF_PN0_ (.CLK( C), .D( D), .Q( Q), .RESET_B( R));
+    unmapped dff cell: $_DFF_PN1_
+    unmapped dff cell: $_DFF_PP0_
+    unmapped dff cell: $_DFF_PP1_
+    unmapped dff cell: $_DFFSR_NNN_
+    unmapped dff cell: $_DFFSR_NNP_
+    unmapped dff cell: $_DFFSR_NPN_
+    unmapped dff cell: $_DFFSR_NPP_
+    unmapped dff cell: $_DFFSR_PNN_
+    unmapped dff cell: $_DFFSR_PNP_
+    unmapped dff cell: $_DFFSR_PPN_
+    unmapped dff cell: $_DFFSR_PPP_
+
+22.1. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+Mapping DFF cells in module `\npu_mult':
+
+23. Executing ABC pass (technology mapping using ABC).
+
+23.1. Extracting gate netlist of module `\npu_mult' to `<abc-temp-dir>/input.blif'..
+Extracted 444 gates and 460 wires to a netlist network with 16 inputs and 16 outputs.
+
+23.1.1. Executing ABC.
+Running ABC command: "<yosys-exe-dir>/yosys-abc" -s -f <abc-temp-dir>/abc.script 2>&1
+ABC: ABC command line: "source <abc-temp-dir>/abc.script".
+ABC: 
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_lib -w /home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib 
+ABC: Parsing finished successfully.  Parsing time =     0.03 sec
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_antennanp" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_decap_4" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_decap_8" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbpq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dfrbpq_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhr_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dlhrq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dllr_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_dllrq_1".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_2".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_4".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_ebufn_8".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_2".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_4".
+ABC: Scl_LibertyReadGenlib() skipped three-state cell "sg13g2_einvn_8".
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_1" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_2" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_4" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_fill_8" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_lgcp_1" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfbbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbp_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbp_2".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbpq_1".
+ABC: Scl_LibertyReadGenlib() skipped sequential cell "sg13g2_sdfrbpq_2".
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_sighold" due to dont_use attribute.
+ABC: Scl_LibertyReadGenlib() skipped cell "sg13g2_slgcp_1" due to dont_use attribute.
+ABC: Library "sg13g2_stdcell_typ_1p20V_25C" from "/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/pdk/sg13g2_stdcell_typ_1p20V_25C.lib" has 54 cells (20 skipped: 14 seq; 6 tri-state; 0 no func; 10 dont_use).  Time =     0.05 sec
+ABC: Memory =    2.86 MB. Time =     0.05 sec
+ABC: + strash 
+ABC: + dretime 
+ABC: + map 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+23.1.2. Re-integrating ABC results.
+ABC RESULTS:     sg13g2_xor2_1 cells:        5
+ABC RESULTS:   sg13g2_nand2b_1 cells:        4
+ABC RESULTS:   sg13g2_nand3b_1 cells:       16
+ABC RESULTS:    sg13g2_a22oi_1 cells:       12
+ABC RESULTS:     sg13g2_and3_1 cells:        2
+ABC RESULTS:     sg13g2_nor4_1 cells:        6
+ABC RESULTS:    sg13g2_nand4_1 cells:       17
+ABC RESULTS:     sg13g2_a21o_1 cells:        2
+ABC RESULTS:    sg13g2_xnor2_1 cells:       38
+ABC RESULTS:     sg13g2_nor3_1 cells:       95
+ABC RESULTS:    sg13g2_nor2b_1 cells:       11
+ABC RESULTS:     sg13g2_nor2_1 cells:       55
+ABC RESULTS:    sg13g2_nand3_1 cells:      108
+ABC RESULTS:    sg13g2_a21oi_1 cells:      127
+ABC RESULTS:      sg13g2_inv_1 cells:       76
+ABC RESULTS:    sg13g2_o21ai_1 cells:      119
+ABC RESULTS:    sg13g2_nand2_1 cells:       93
+ABC RESULTS:        internal signals:      428
+ABC RESULTS:           input signals:       16
+ABC RESULTS:          output signals:       16
+Removing temp directory.
+
+24. Executing SETUNDEF pass (replace undef values with defined constants).
+
+25. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \npu_mult..
+Removed 0 unused cells and 543 unused wires.
+<suppressed ~84 debug messages>
+
+26. Printing statistics.
+
+=== npu_mult ===
+
+   Number of wires:                773
+   Number of wire bits:            802
+   Number of public wires:           3
+   Number of public wire bits:      32
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                786
+     sg13g2_a21o_1                   2
+     sg13g2_a21oi_1                127
+     sg13g2_a22oi_1                 12
+     sg13g2_and3_1                   2
+     sg13g2_inv_1                   76
+     sg13g2_nand2_1                 93
+     sg13g2_nand2b_1                 4
+     sg13g2_nand3_1                108
+     sg13g2_nand3b_1                16
+     sg13g2_nand4_1                 17
+     sg13g2_nor2_1                  55
+     sg13g2_nor2b_1                 11
+     sg13g2_nor3_1                  95
+     sg13g2_nor4_1                   6
+     sg13g2_o21ai_1                119
+     sg13g2_xnor2_1                 38
+     sg13g2_xor2_1                   5
+
+   Chip area for module '\npu_mult': 6955.956000
+
+Warnings: 4 unique messages, 36 total
+End of script. Logfile hash: c9c7e019fc, CPU: user 0.93s system 0.01s, MEM: 21.01 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 41% 3x abc (0 sec), 11% 18x opt_clean (0 sec), ...

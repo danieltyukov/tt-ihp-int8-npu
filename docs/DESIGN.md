@@ -408,28 +408,33 @@ Design decisions that came out of measuring rather than guessing:
 
 ## Clock target
 
-`clock_hz` is 40 MHz (25 ns). No static timing analysis tool is available in
-this environment, so the number is derived from the measured logic depth and the
-liberty's own delay tables, with margin, and it must be confirmed by the STA in
-the hardening flow.
+`clock_hz` is 40 MHz (25 ns), measured with OpenSTA on the mapped netlist
+against the IHP `sg13g2` liberty at three PVT corners. `make sta` regenerates the
+reports under `docs/synth/`.
+
+| corner | worst setup slack at 25 ns | cell-delay critical path | implied Fmax |
+| --- | --- | --- | --- |
+| fast, 1.32 V, -40 C | +15.180 ns | 9.82 ns | 101.8 MHz |
+| typical, 1.20 V, 25 C | +11.246 ns | 13.75 ns | 72.7 MHz |
+| slow, 1.08 V, 125 C | +4.598 ns | 20.40 ns | 49.0 MHz |
 
 The critical path is one 8x8 signed multiply followed by a 19-bit add inside a
-PE, or the accumulator path (sign extend, 25-bit add, saturate multiplexer);
-Yosys reports 36 mapped cells for the deepest path in the shipped
-configuration. Taking the mean `cell_rise` of eight representative cells from
-`sg13g2_stdcell_typ_1p20V_25C.lib`:
+PE, which Yosys reports as 35 mapped cells deep. There is no placement at this
+stage, so wire parasitics are absent from these numbers and the hardening flow's
+own STA is the authority. What the corner sweep does establish is the margin: at
+the slow corner a 25 ns period leaves 4.6 ns, about 18%, for interconnect and
+clock tree, while a 20 ns period would already be 0.4 ns short of the cell delays
+alone. That is the whole reason the target is 40 MHz rather than the template's
+50 MHz.
 
-| load per stage | mean cell delay | 36 stages | implied clock |
-| --- | --- | --- | --- |
-| 20 fF (a few fanouts) | 0.173 ns | 6.2 ns | 160 MHz |
-| 150 fF (middle of the library's load grid) | 0.457 ns | 16.6 ns | 60 MHz |
-| chosen target | 0.694 ns | 25.0 ns | 40 MHz |
+The analysis assumes 2 ns of input and output delay at the Tiny Tapeout mux
+boundary, a `sg13g2_buf_2` driving cell on the inputs, 50 fF of output load and
+0.25 ns of clock uncertainty. Hold slack is +0.073 ns at the slow corner and
+-0.102 ns at the fast corner, which is the normal starting point for a flow that
+inserts hold buffers during placement.
 
-40 MHz leaves 1.5x margin over the pessimistic column and 4x over the
-optimistic one, which is where a design with a multiply-add in a single cycle
-should sit before real extraction. Halving `M_W` or splitting the PE into
-multiply and accumulate stages are the two obvious ways to go faster; both are
-described in `docs/ADAPTING.md`.
+Halving `M_W` or splitting the PE into multiply and accumulate stages are the two
+obvious ways to go faster; both are described in `docs/ADAPTING.md`.
 
 ## Verification plan
 

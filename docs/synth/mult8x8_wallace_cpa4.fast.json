@@ -1,0 +1,40 @@
+{
+  "cells": {
+    "sg13g2_a21o_1": 4,
+    "sg13g2_a21oi_1": 83,
+    "sg13g2_a22oi_1": 19,
+    "sg13g2_and2_1": 4,
+    "sg13g2_and3_1": 2,
+    "sg13g2_and4_2": 1,
+    "sg13g2_inv_1": 83,
+    "sg13g2_nand2_1": 128,
+    "sg13g2_nand2b_1": 9,
+    "sg13g2_nand3_1": 89,
+    "sg13g2_nand3b_1": 6,
+    "sg13g2_nand4_1": 24,
+    "sg13g2_nor2_1": 55,
+    "sg13g2_nor2b_1": 12,
+    "sg13g2_nor3_1": 46,
+    "sg13g2_nor4_1": 4,
+    "sg13g2_o21ai_1": 64,
+    "sg13g2_xnor2_1": 30,
+    "sg13g2_xor2_1": 11
+  },
+  "cell_count": 674,
+  "area_um2": 5839.8354,
+  "logic_depth": 20,
+  "wires": 661,
+  "flop_count": 0,
+  "blackboxes": [],
+  "latches": [],
+  "name": "mult8x8_wallace_cpa4",
+  "top": "npu_mult",
+  "params": {
+    "A_W": 8,
+    "B_W": 8,
+    "MUL_ARCH": 1,
+    "ADD_ARCH": 4
+  },
+  "effort": "fast",
+  "liberty": "sg13g2_stdcell_typ_1p20V_25C.lib"
+}

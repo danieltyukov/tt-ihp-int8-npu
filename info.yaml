@@ -7,6 +7,8 @@ project:
   discord:      ""
   description:  "4x2 weight-stationary systolic array of signed INT8 MACs with an integer-only requantization pipeline, per-channel scales, four activation functions and a framed byte protocol"
   language:     "SystemVerilog"
+  # 40 MHz: OpenSTA on the mapped netlist leaves +4.6 ns of setup slack at
+  # the slow corner (1.08 V, 125 C) with a 25 ns period. See README.md.
   clock_hz:     40000000
 
   source_files:

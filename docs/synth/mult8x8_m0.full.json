@@ -1,0 +1,42 @@
+{
+  "cells": {
+    "sg13g2_a21o_1": 11,
+    "sg13g2_a21oi_1": 21,
+    "sg13g2_a221oi_1": 1,
+    "sg13g2_a22oi_1": 8,
+    "sg13g2_and2_1": 27,
+    "sg13g2_and3_1": 4,
+    "sg13g2_and4_1": 6,
+    "sg13g2_inv_1": 3,
+    "sg13g2_nand2_1": 67,
+    "sg13g2_nand2b_1": 18,
+    "sg13g2_nand3_1": 13,
+    "sg13g2_nand3b_1": 1,
+    "sg13g2_nand4_1": 6,
+    "sg13g2_nor2_1": 9,
+    "sg13g2_nor2b_1": 20,
+    "sg13g2_nor3_1": 5,
+    "sg13g2_o21ai_1": 28,
+    "sg13g2_or2_1": 7,
+    "sg13g2_or3_1": 9,
+    "sg13g2_xnor2_1": 52,
+    "sg13g2_xor2_1": 23
+  },
+  "cell_count": 339,
+  "area_um2": 3488.7888,
+  "logic_depth": 21,
+  "wires": 326,
+  "flop_count": 0,
+  "blackboxes": [],
+  "latches": [],
+  "name": "mult8x8_m0",
+  "top": "npu_mult",
+  "params": {
+    "A_W": 8,
+    "B_W": 8,
+    "MUL_ARCH": 0,
+    "ADD_ARCH": 4
+  },
+  "effort": "full",
+  "liberty": "sg13g2_stdcell_typ_1p20V_25C.lib"
+}

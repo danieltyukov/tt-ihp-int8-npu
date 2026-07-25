@@ -62,12 +62,12 @@ async def check_mults(dut, ma: int, mb: int, errors: list[str]) -> int:
     exp = ma * mb
     checks = 0
     for k, name in enumerate(MULT_NAMES):
-        got = int(_sig(dut, "prod", k).value.signed_integer)
+        got = int(_sig(dut, "prod", k).value.to_signed())
         checks += 1
         if got != exp:
             errors.append(f"mult {name}: {ma} * {mb} gave {got}, expected {exp}")
     for k, name in enumerate(ADDER_NAMES):
-        got = int(_sig(dut, "prod_addarch", k).value.signed_integer)
+        got = int(_sig(dut, "prod_addarch", k).value.to_signed())
         checks += 1
         if got != exp:
             errors.append(

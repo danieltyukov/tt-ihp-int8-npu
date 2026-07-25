@@ -32,16 +32,18 @@ jobs:
           sudo make -C /tmp/sby install
           sby --version
 
-      - name: Setup python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
+      # No actions/setup-python here on purpose. sby and yosys-smtbmc run under
+      # `#!/usr/bin/env python3` and import click, which arrives with the yosys
+      # package as a system dist-package. A setup-python interpreter shadows
+      # that one, has no click, and every proof dies at import in a tenth of a
+      # second. The runner's own 3.12 needs nothing installed: run_formal.py is
+      # standard library only.
+      #
       # One solver per core. Each proof is a single-threaded z3 under a
       # single-threaded yosys-smtbmc and peaks well under 100 MB, so the
       # runner's four cores are the only limit.
       - name: Prove every arithmetic variant against its reference
-        run: python scripts/run_formal.py --jobs 4
+        run: python3 scripts/run_formal.py --jobs 4
 
       # summary.md carries no timings and no worker count precisely so that
       # this comparison is meaningful: if a proof stopped passing, or a variant

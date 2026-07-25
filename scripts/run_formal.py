@@ -145,7 +145,16 @@ def run(job: dict, timeout: int) -> dict:
     print(f"  {status:8s} {elapsed:6.1f}s  {job['name']:24s} {job['label']}",
           flush=True)
     if status != "pass":
-        (WORK / f"{job['name']}.log").write_text(out)
+        log = WORK / f"{job['name']}.log"
+        log.write_text(out)
+        # A "unknown" is usually sby failing to start rather than a proof
+        # saying anything, and on CI the log file is not somewhere anyone will
+        # look. Put the reason next to the result.
+        tail = [ln for ln in out.splitlines() if ln.strip()][-12:]
+        print(f"    rc={rc}, full output in {log}")
+        for ln in tail:
+            print(f"    | {ln}")
+        sys.stdout.flush()
     return result
 
 

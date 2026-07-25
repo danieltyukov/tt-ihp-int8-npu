@@ -47,7 +47,11 @@ module npu_csa_reduce #(
         wire [WIDTH-1:0] z = rows_i[(3*g+2)*WIDTH +: WIDTH];
 
         wire [WIDTH-1:0] s = x ^ y ^ z;                    // full-adder sums
+        // Bit WIDTH-1 of the carry vector would move above the product width
+        // and is dropped, which is exact modulo 2**WIDTH.
+        /* verilator lint_off UNUSEDSIGNAL */
         wire [WIDTH-1:0] c = (x & y) | (x & z) | (y & z);  // full-adder carries
+        /* verilator lint_on UNUSEDSIGNAL */
 
         assign next_rows[(2*g+0)*WIDTH +: WIDTH] = s;
         // A carry generated at bit i belongs at bit i+1 of the next row.

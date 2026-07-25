@@ -75,14 +75,18 @@ def build_script(top: str, params: dict[str, int], liberty: Path,
         f"hierarchy -top {top} -check",
         f"synth -top {top} -flatten",
         "check -assert",
-        f"dfflibmap -liberty {liberty}",
     ]
+    # Map the combinational logic first and measure depth while the registers
+    # are still generic $_DFF_ cells, which is what `ltp -noff` can recognise;
+    # only then map the registers so that `stat` reports real cell area.
     lines.append(f"abc {'-fast ' if effort == 'fast' else ''}-liberty {liberty}")
     lines += [
         "setundef -zero",
         "opt_clean -purge",
-        f"stat -liberty {liberty}",
         "ltp -noff",
+        f"dfflibmap -liberty {liberty}",
+        "opt_clean -purge",
+        f"stat -liberty {liberty}",
     ]
     if netlist:
         lines.append(f"write_verilog -noattr {netlist}")
@@ -117,7 +121,7 @@ def parse_report(text: str) -> dict:
                 in_stat = False
     # A sequential cell count separates flop area from combinational area.
     out["flop_count"] = sum(n for c, n in out["cells"].items()
-                            if re.search(r"_s?dff|_dl[hl]", c))
+                            if re.search(r"_s?dfr|_s?dfb|_dl[hl]", c))
     out["blackboxes"] = sorted(c for c in out["cells"] if c.startswith("$"))
     out["latches"] = sorted(c for c in out["cells"] if "_dl" in c)
     return out

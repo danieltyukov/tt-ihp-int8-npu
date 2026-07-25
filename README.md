@@ -352,15 +352,17 @@ estimate all three candidate tiles were hardened to signoff and
 zero Magic DRC, zero Netgen LVS, zero routing DRC, zero antenna violations,
 positive slack at every corner, `precheck` and `gl_test` green.
 
-**6x2 ships.** It has the best setup slack of the three (+12.54 ns against
-+11.90 and +11.40), the shortest routed wirelength, and it is the only one that
-stays inside the 60% placement target this project set for itself.
+**6x2 ships.** Of the three it has the best setup slack (+12.54 ns against
++11.90 and +11.40) and the shortest routed wirelength, and it is the smallest
+tile that stays inside the 60% placement target this project set for itself.
 
-4x2 is a legitimate choice for anyone who wants the smallest die, and it is a
-third smaller. What it costs is margin: 73.0% core utilization against a 60%
-target, an extra detailed-routing iteration, 0.64 ns less setup slack and 10 um
-more routed wire, with logic reaching 99% of the die width. Nothing in this
-design needs that third tile back, so the margin is worth more than the area.
+4x2 is the smallest tile that signs off, and it is a third less die. What it
+costs is margin: 73.0% core utilization against that 60% target, a sixth
+detailed-routing iteration where the others need five, 0.64 ns less setup slack,
+10 um more routed wire, and logic reaching 99% of the die width. For a design
+that is going to a shuttle and cannot be respun, two tiles of margin are worth
+more than one tile of area. Anyone who disagrees has the full 4x2 signoff in
+[docs/pnr/alt-4x2](docs/pnr/alt-4x2) and one line of `info.yaml` to change.
 
 8x2 bought nothing at all. Its placement never put a cell past 59% of the die
 width, and it still finished with the worst slack of the three.
@@ -447,7 +449,7 @@ RTL.
 
 ![standard-cell detail](docs/img/layout_detail.png)
 
-A 44 x 22 um crop, 0.3% of the die. Six standard-cell rows, each with its own
+A 44 x 22 um crop, 0.24% of the die. Six standard-cell rows, each with its own
 VDD and VSS rails, individual cells with their diffusion and poly, the routing
 above them, and two power straps crossing vertically.
 

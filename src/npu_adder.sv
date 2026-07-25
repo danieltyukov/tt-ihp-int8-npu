@@ -60,16 +60,29 @@ module npu_adder #(
   wire [WIDTH-1:0] g_raw = a & b;
   wire [WIDTH-1:0] g_pre = {g_raw[WIDTH-1:1], g_raw[0] | (p_pre[0] & cin)};
 
+  // Only the last stage of the network is read, and each architecture leaves a
+  // different subset of the earlier stages dangling, so unused bits here are
+  // expected rather than a mistake.
+  // Stage s reads only stage s-1, but both live in one flat vector, so the
+  // linter sees a self-dependency where there is none.
+  /* verilator lint_off UNUSEDSIGNAL */
+  /* verilator lint_off UNOPTFLAT */
   wire [NNODE-1:0] gnet;  // group generate, [stage*WIDTH + bit]
   wire [NNODE-1:0] pnet;  // group propagate
+  /* verilator lint_on UNOPTFLAT */
+  /* verilator lint_on UNUSEDSIGNAL */
 
   assign gnet[0 +: WIDTH] = g_pre;
   assign pnet[0 +: WIDTH] = p_pre;
 
   generate
     if (ARCH == 0) begin : g_ripple
-      // Serial carry chain: G[i] = g[i] | (p[i] & G[i-1]).
+      // Serial carry chain: G[i] = g[i] | (p[i] & G[i-1]). Bit i+1 depends on
+      // bit i of the same vector, which Verilator reports as a combinational
+      // loop even though the dependency is strictly acyclic per bit.
+      /* verilator lint_off UNOPTFLAT */
       wire [WIDTH:0] carry;
+      /* verilator lint_on UNOPTFLAT */
       assign carry[0] = cin;
       for (genvar i = 0; i < WIDTH; i++) begin : g_bit
         assign carry[i+1] = g_raw[i] | (p_pre[i] & carry[i]);

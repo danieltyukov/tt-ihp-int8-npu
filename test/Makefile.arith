@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Daniel Tyukov
+# SPDX-License-Identifier: Apache-2.0
+#
+# Arithmetic-variant equivalence suite: separate testbench, separate results.
+
+SIM ?= icarus
+FST ?= -fst
+TOPLEVEL_LANG ?= verilog
+SRC_DIR = $(PWD)/../src
+ARITH_SOURCES = npu_adder.sv npu_csa_reduce.sv npu_pp_baugh_wooley.sv \
+                npu_pp_booth4.sv npu_mult.sv
+
+SIM_BUILD = sim_build/arith
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(ARITH_SOURCES))
+VERILOG_SOURCES += $(PWD)/tb_arith.v
+TOPLEVEL = tb_arith
+COCOTB_TEST_MODULES = test_arith
+COCOTB_RESULTS_FILE = results_arith.xml
+
+include $(shell cocotb-config --makefiles)/Makefile.sim

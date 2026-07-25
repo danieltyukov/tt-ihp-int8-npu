@@ -5,10 +5,13 @@ A signed INT8 neural-network inference accelerator for the
 weight-stationary systolic MAC array with a complete integer-only
 requantization pipeline, driven over nine pins.
 
-Everything here is measured rather than asserted. Areas come from Yosys against
-the real IHP `sg13g2` liberty, the tile size is chosen from those numbers, every
-arithmetic architecture is compared against every other one, and the figures are
-drawn from traces taken out of the running RTL.
+Everything here is measured rather than asserted. Synthesis areas come from
+Yosys against the real IHP `sg13g2` liberty, the post-route area, timing and
+signoff numbers come from a LibreLane run that reaches zero DRC and zero LVS
+errors, every arithmetic architecture is formally proved equal to its behavioral
+reference, and the figures are drawn from traces taken out of the running RTL.
+It is a hardened layout, not silicon: fabrication would still go through a Tiny
+Tapeout shuttle.
 
 ![architecture](docs/img/architecture.svg)
 
@@ -23,13 +26,16 @@ drawn from traces taken out of the running RTL.
 | requantization | per-channel Q0.16 multiplier, rounding arithmetic shift, output zero point, INT8 saturation |
 | activations | identity, ReLU, ReLU6, shift-based leaky ReLU, selectable at runtime |
 | host interface | framed byte protocol, 12 opcodes, 4 readback sources, sticky error codes |
-| measured area | 142403 um2 of standard cells (8118 cells, 1137 registers) |
-| tile | 8x2, 49.3% cell density |
-| clock target | 40 MHz, from OpenSTA: +4.6 ns setup slack at the slow corner |
+| synthesis area | 142403 um2 of standard cells (8118 cells, 1137 registers) |
+| post-route area | 189657 um2 of standard cells in 11225 instances, 36.05% core utilization |
+| tile | 8x2, a 1724.16 x 313.74 um die of 540938 um2 |
+| hardening | 0 Magic DRC errors, 0 Netgen LVS errors, 0 routing DRC errors, 0 antenna violations |
+| clock target | 40 MHz: +4.6 ns setup slack from OpenSTA after synthesis, +11.4 ns after routing, both at the slow corner |
 
 The arithmetic is not a fixed netlist. Five adder architectures and three
-multiplier architectures are parameterized generators, selected by a number, and
-all of them are proven bit-identical to each other:
+multiplier architectures are parameterized generators, selected by a number,
+and each one is formally proved equal to its behavioral reference over the
+whole input space:
 
 ```systemverilog
 npu_adder #(.WIDTH(25), .ARCH(4))   u_add (...);   // Han-Carlson
@@ -44,9 +50,11 @@ npu_mult  #(.A_W(8), .B_W(8), .MUL_ARCH(1), .ADD_ARCH(4)) u_mul (...);
 - [Quantization semantics](#quantization-semantics)
 - [Arithmetic architecture comparison](#arithmetic-architecture-comparison)
 - [Tile size](#tile-size)
+- [Hardened layout](#hardened-layout)
 - [Clock target](#clock-target)
 - [End-to-end neural network demo](#end-to-end-neural-network-demo)
 - [Verification](#verification)
+- [Formal equivalence](#formal-equivalence)
 - [Simulating and testing](#simulating-and-testing)
 - [Repository layout](#repository-layout)
 - [Which CI jobs can actually run](#which-ci-jobs-can-actually-run)
@@ -300,30 +308,47 @@ The shipped configuration uses `ADD_ARCH=4` (Han-Carlson) and `MUL_ARCH=1`
 <!--PPA_SCALING-->
 Every geometry below was synthesized and measured, not estimated:
 
-| array | S_MAX | MACs/cycle | cells | area (um2) | registers | depth | smallest tile | density |  |
+The last two columns apply the 60% criterion twice: once to the Yosys cell area, and once to that area scaled by 1.33, which is the synthesis-to-post-route cell area ratio measured on the shipped configuration. Only the shipped row has been hardened, so the scaled column is an extrapolation from that one data point.
+
+| array | S_MAX | MACs/cycle | cells | synth area (um2) | registers | depth | smallest tile, synth area | smallest tile, x1.33 route |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2x2 | 2 | 4 | 3918 | 65508 | 554 | 35 | 4x2 | 45.4% |  |
-| 2x2 | 4 | 4 | 4705 | 83687 | 723 | 35 | 4x2 | 58.0% |  |
-| 4x2 | 2 | 8 | 5899 | 92995 | 733 | 32 | 6x2 | 43.0% |  |
-| 4x2 | 4 | 8 | 6718 | 114070 | 935 | 29 | 6x2 | 52.7% |  |
-| 2x2 | 8 | 4 | 6604 | 126700 | 1051 | 38 | 6x2 | 58.5% |  |
-| 4x2 | 5 | 8 | 7785 | 132631 | 1041 | 34 | 8x2 | 46.0% |  |
-| **4x2** | 6 | 8 | 8118 | 142403 | 1137 | 35 | 8x2 | 49.3% | shipped |
-| 2x4 | 4 | 8 | 7966 | 145147 | 1215 | 29 | 8x2 | 50.3% |  |
-| 6x2 | 4 | 12 | 8896 | 145372 | 1145 | 29 | 8x2 | 50.4% |  |
-| 8x2 | 2 | 16 | 9826 | 148825 | 1099 | 31 | 8x2 | 51.6% |  |
-| 4x2 | 8 | 8 | 8788 | 162109 | 1329 | 35 | 8x2 | 56.2% |  |
-| 4x4 | 2 | 16 | 10665 | 166112 | 1237 | 29 | 8x2 | 57.6% |  |
-| 8x2 | 4 | 16 | 10751 | 174925 | 1369 | 29 | over 8x2 |  |  |
-| 4x4 | 4 | 16 | 11778 | 199360 | 1569 | 29 | over 8x2 |  |  |
+| 2x2 | 2 | 4 | 3918 | 65508 | 554 | 35 | 2x2 at 49.8% | 3x2 at 43.7% |  |
+| 2x2 | 4 | 4 | 4705 | 83687 | 723 | 35 | 3x2 at 41.9% | 3x2 at 55.8% |  |
+| 4x2 | 2 | 8 | 5899 | 92995 | 733 | 32 | 3x2 at 46.5% | 4x2 at 46.2% |  |
+| 4x2 | 4 | 8 | 6718 | 114070 | 935 | 29 | 3x2 at 57.1% | 4x2 at 56.7% |  |
+| 2x2 | 8 | 4 | 6604 | 126700 | 1051 | 38 | 4x2 at 47.3% | 6x2 at 41.7% |  |
+| 4x2 | 5 | 8 | 7785 | 132631 | 1041 | 34 | 4x2 at 49.5% | 6x2 at 43.7% |  |
+| **4x2** | 6 | 8 | 8118 | 142403 | 1137 | 35 | 4x2 at 53.1% | 6x2 at 46.9% | shipped |
+| 2x4 | 4 | 8 | 7966 | 145147 | 1215 | 29 | 4x2 at 54.1% | 6x2 at 47.8% |  |
+| 6x2 | 4 | 12 | 8896 | 145372 | 1145 | 29 | 4x2 at 54.2% | 6x2 at 47.9% |  |
+| 8x2 | 2 | 16 | 9826 | 148825 | 1099 | 31 | 4x2 at 55.5% | 6x2 at 49.0% |  |
+| 4x2 | 8 | 8 | 8788 | 162109 | 1329 | 35 | 6x2 at 40.1% | 6x2 at 53.4% |  |
+| 4x4 | 2 | 16 | 10665 | 166112 | 1237 | 29 | 6x2 at 41.1% | 6x2 at 54.7% |  |
+| 8x2 | 4 | 16 | 10751 | 174925 | 1369 | 29 | 6x2 at 43.2% | 6x2 at 57.6% |  |
+| 4x4 | 4 | 16 | 11778 | 199360 | 1569 | 29 | 6x2 at 49.3% | 3x4 at 58.7% |  |
 
 ![area scaling](docs/img/area_scaling.png)
 
 The criterion is cell area at or below 60% of the die area, matching
-`PL_TARGET_DENSITY_PCT` in `src/config.json`. The shipped configuration measures
-**142403 um2**, which is 49.3% of the 8x2 die (288576 um2). A 6x2 tile would be
-65.8%, above the placement target, so 8x2 is the smallest tile that meets the
-criterion.
+`PL_TARGET_DENSITY_PCT` in `src/config.json`. Die areas come from the
+`tt_block_<tile>_pgvdd.def` floorplan templates the hardening flow applies, so
+the 8x2 die is 1724.16 x 313.74 um, or 540938 um2. The shipped configuration
+synthesizes to **142403 um2**, 26.3% of that die.
+
+Synthesis area is not what the tile has to hold. Placement and routing insert
+2450 timing-repair buffers and 1395 hold buffers, and the design arrives at
+signoff with **189657 um2** of standard cells, 1.33 times the Yosys figure.
+Against the 60% criterion that rules out a 4x2 tile, where the routed design
+would sit at 70.8%, and leaves 6x2 at 46.9% as the smallest tile that meets it.
+
+The shipped tile is 8x2, one size larger, and the final placement says so
+plainly: every standard cell in the design sits at x <= 1023.4 um, so the right
+700 um of the die holds nothing but decap fill. 8x2 was chosen from a tile table
+that turned out to be wrong; the numbers above are the corrected ones. What the
+extra tile buys is routing margin, and this design used it: detailed routing
+started at 3297 DRC violations and needed five iterations to reach zero.
+[The 6x2 hardening](#the-6x2-alternative) below is the measurement of what
+happens without that margin.
 
 This is a large project by Tiny Tapeout standards, and the reason is registers
 rather than arithmetic. A resettable flip-flop in sg13g2 is 48.99 um2 and a
@@ -334,22 +359,84 @@ bits of result register. That is the real cost of a systolic array on a tile wit
 no SRAM, and it is why area grows faster with `S_MAX` than with the array itself.
 
 Two calibration points, measured with the same flow, for anyone weighing that
-number: the two IHP projects this one supersedes come out at 7006 um2 (a 1x1
-tile, 39% density) and 65111 um2 (a 2x2 tile, 90% density, well above what the
-60% placement target would allow).
+number: the two IHP projects this one supersedes synthesize to 7006 um2 (22.4%
+of a 1x1 tile) and 65111 um2 (49.5% of a 2x2 tile).
 
-Smaller configurations, all measured, for forks that want cheaper silicon:
+Smaller configurations, all measured, for forks that want cheaper silicon. The
+routed column scales the synthesis area by the 1.33 factor measured on the
+shipped configuration, which is an extrapolation from one hardened point:
 
-| configuration | MACs/cycle | area | smallest tile at 60% |
-| --- | --- | --- | --- |
-| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 8 | 142403 um2 | 8x2, 49.3% |
-| `ROWS=4 COLS=2 S_MAX=5` | 8 | 132630 um2 | 8x2, 46.0% (6x2 would be 61.3%) |
-| `ROWS=4 COLS=2 S_MAX=4` | 8 | 114070 um2 | 6x2, 52.7% |
-| `ROWS=2 COLS=2 S_MAX=4` | 4 | 83686 um2 | 4x2, 58.0% |
-| `ROWS=2 COLS=2 S_MAX=2` | 4 | 65508 um2 | 4x2, 45.4% (3x2 would be 60.5%) |
+| configuration | MACs/cycle | synth area | tile at 60%, synth | tile at 60%, x1.33 |
+| --- | --- | --- | --- | --- |
+| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 8 | 142403 um2 | 4x2, 53.1% | 6x2, 46.9% |
+| `ROWS=4 COLS=2 S_MAX=5` | 8 | 132630 um2 | 4x2, 49.5% | 6x2, 43.7% |
+| `ROWS=4 COLS=2 S_MAX=4` | 8 | 114070 um2 | 3x2, 57.1% | 4x2, 56.7% |
+| `ROWS=2 COLS=2 S_MAX=4` | 4 | 83686 um2 | 3x2, 41.9% | 3x2, 55.8% |
+| `ROWS=2 COLS=2 S_MAX=2` | 4 | 65508 um2 | 2x2, 49.8% | 3x2, 43.7% |
 
 `S_MAX >= ROWS + COLS - 1` is what makes a cycle in which every PE is busy
 possible, which is why the shipped configuration keeps `S_MAX = 6`.
+
+## Hardened layout
+
+The design hardens end to end in the Tiny Tapeout `gds` workflow: LibreLane
+takes the RTL through synthesis, floorplanning, placement, CTS, routing and
+signoff against the IHP `sg13g2` PDK. This is a hardened layout, not silicon.
+Nothing here has been fabricated, and a shuttle submission still has to go
+through Tiny Tapeout.
+
+<!--PNR_RESULTS-->
+Signoff metrics from the `gds` workflow, run [30171991004](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30171991004), hardened with LibreLane 3.0.0.dev44 against `ihp-sg13g2` at PDK commit `cb7daaa89010`. Copied verbatim into [docs/pnr/metrics.json](docs/pnr/metrics.json) by `scripts/harvest_pnr.py`.
+
+|  |  |
+| --- | --- |
+| die | 1724.16 x 313.74 um, 540938 um2 (8x2 tile) |
+| standard cells | 189657 um2 in 11225 instances |
+| core utilization | **36.05%** |
+| cell area vs the die | 35.06% |
+| decap and fill | 336482 um2 in 31301 instances |
+| registers | 1137 |
+| buffers inserted for timing repair | 2450 |
+| buffers inserted for hold | 1395 |
+| clock buffers and inverters | 206 + 14 |
+| logic placed between | x = 2.88 um and x = 1023.36 um, 59.2% of the die width |
+| routed wirelength | 398341 um |
+| setup slack, slow corner (1.08 V, 125 C) | **+11.40 ns** at a 25 ns period |
+| hold slack, fast corner (1.32 V, -40 C) | +0.106 ns |
+| worst clock skew, setup | 0.392 ns |
+| Magic DRC errors | **0** |
+| Netgen LVS errors | **0** |
+| detailed-route DRC errors | **0** |
+| antenna violations | 0 |
+| total power estimate | 9.8 mW |
+
+![hardened 8x2 die](docs/img/layout_die.png)
+
+The whole 1724.16 x 313.74 um die. The regularly spaced vertical stripes are
+the power straps at the 38.87 um PDN pitch, not array structure: LibreLane
+flattens the module hierarchy during synthesis and renames every cell, so
+nothing in the layout is grouped by processing element and the systolic
+structure is not visible here. It is visible in the architecture diagram and in
+the dataflow figure, both of which come from the RTL.
+
+![standard-cell detail](docs/img/layout_detail.png)
+
+A 44 x 22 um crop, about 0.3% of the die. Six standard-cell rows, each with its
+own VDD and VSS rails, individual cells with their diffusion and poly, the
+routing above them, and two power straps crossing vertically.
+
+![logic to fill boundary](docs/img/layout_fill_edge.png)
+
+A 160 x 80 um crop across x = 1023 um, where the design ends. Irregular logic
+cells on the left, the strict repeating pattern of identical decap fill cells
+on the right. This is the picture of the 8x2 tile being larger than the design
+needs.
+
+### The 6x2 alternative
+
+<!--TILE_6X2-->
+_Pending: the same RTL hardened at 6x2, measured on the
+`experiment/tile-6x2` branch._
 
 ## Clock target
 
@@ -399,18 +486,6 @@ the requantized INT8 activations of layer 1 fed back in as the input to layer 2.
 | hidden quantization | scale 0.0315701, zero point -128 |
 | output quantization | scale 0.468215, zero point 0 |
 
-The RTL run: **18 images through the accelerator, 396 INT8 layer outputs (both
-layers) bit-exact against the NumPy INT8 reference**, and predictions identical to
-it. Those 18 images are 14 correct; the accuracy figures above are the reference
-model over the whole 359-image test set, which the RTL matches bit for bit on the
-subset it ran. `NPU_DEMO_IMAGES=359 make demo` runs all of them, at roughly a
-minute of simulation per image.
-
-Each layer is tiled the way a host would do it: layer 1 is 6 channel groups of 4
-accumulating passes each, layer 2 is 5 groups of 3 passes, and layer 1's
-requantized INT8 output is read back and fed in as layer 2's input, with its
-zero point at -128 folded into layer 2's bias.
-
 ![confusion](docs/img/demo_confusion.png)
 
 ![per class](docs/img/demo_per_class.png)
@@ -447,7 +522,9 @@ Coverage worth calling out:
   crossed with zero points at both INT8 rails.
 - **Arithmetic-variant equivalence**: every adder and multiplier architecture
   bit-identical to every other. The cocotb sweep covers 4096 signed 8x8 operand
-  pairs across eight variants; `make arith` covers all 65536 exhaustively.
+  pairs across eight variants; `make arith` covers all 65536 exhaustively; and
+  [formal equivalence](#formal-equivalence) proves the same thing over the whole
+  input space rather than sampling it.
 - **Sustained throughput** measured on the PE registers themselves, not inferred
   from a cycle count: every PE performs exactly 6 MACs with no gaps and all 8 are
   simultaneously busy for 2 cycles.
@@ -469,6 +546,18 @@ Results from the last full run:
 
 Produced by `make test-all` on this machine with Icarus Verilog 12.0 and cocotb 2.0.1.
 
+## Formal equivalence
+
+<!--FORMAL_RESULTS-->
+`scripts/run_formal.py` proves each arithmetic variant equal to its behavioral reference: `a + b + cin` for adders, `a * b` for multipliers. Engine: SymbiYosys bmc, smtbmc z3, depth 1. A pass is therefore a correctness proof over the whole input space, not an agreement check between two implementations, and it is what makes the area and depth differences in the PPA tables the only differences.
+
+**35 of 35 proofs pass**, 488s of wall time. Full table in [docs/formal/summary.md](docs/formal/summary.md).
+
+| what is proved | variants | inputs per proof | result |
+| --- | --- | --- | --- |
+| `npu_adder` equals `a + b + cin` | 5 architectures x 19, 25, 26 and 42 bits | 2**39 to 2**85 | 20/20 pass |
+| `npu_mult` equals `a * b` | 3 partial-product styles x 5 final adders | all 65536 signed 8x8 pairs | 15/15 pass |
+
 ## Simulating and testing
 
 ```
@@ -477,9 +566,14 @@ make lint        # verilator --lint-only -Wall on every module, silent
 make arith       # exhaustive iverilog arithmetic bench, no venv needed
 make test        # cocotb accelerator suite
 make test-all    # plus variant equivalence and the end-to-end NN demo
+make formal      # SymbiYosys proofs for every adder and multiplier variant
 make ppa         # full PPA comparison, writes docs/synth/ppa.md
 make images      # regenerate every figure from measured data
 ```
+
+`make formal` needs `sby` and `z3`; the adder proofs finish in a second each and
+the multiplier proofs in one to two minutes each. `--jobs` sets how many solvers
+run at once, defaulting to the core count minus two and capped at four.
 
 Measured runtimes on this machine (Icarus 12.0, roughly 250 to 500 ns of
 simulation per second on this design): the accelerator suite is about 25 minutes,
@@ -523,13 +617,19 @@ test/
   test_trace.py             captures the data behind the figures
   tb_arith.sv               exhaustive standalone arithmetic bench
   data/                     committed dataset and quantized demo model
-scripts/                    synthesis, PPA, training and figure generation
+formal/
+  miter_adder.sv            npu_adder against a + b + cin
+  miter_mult.sv             npu_mult against a * b
+scripts/                    synthesis, PPA, formal, training, figures, rendering
 docs/
   DESIGN.md                 architecture, mathematics, cost models, area budget
   ADAPTING.md               how to fork this: resize, swap the layer, add a
                             variant, retarget the tile
   info.md                   Tiny Tapeout datasheet page
   synth/ppa.md              full measured PPA tables
+  pnr/metrics.json          signoff metrics from the hardening run, verbatim
+  pnr/placement.json        die box and cell extent from the final DEF
+  formal/summary.md         every proof, its input space and its solver time
   img/                      every figure, all generated by committed scripts
 ```
 

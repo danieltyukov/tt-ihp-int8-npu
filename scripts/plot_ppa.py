@@ -22,7 +22,15 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 PPA = REPO / "docs" / "synth" / "ppa.json"
+PNR = REPO / "docs" / "pnr" / "metrics.json"
 IMG = REPO / "docs" / "img"
+
+
+def post_route_area() -> float | None:
+    """Standard-cell area of the shipped configuration after routing."""
+    if not PNR.is_file():
+        return None
+    return json.loads(PNR.read_text())["design__instance__area__stdcell"]
 
 # One hue per metric, used consistently across every figure.
 C_AREA = "#2f6f9f"
@@ -137,6 +145,18 @@ def plot_scaling(data) -> None:
         ax.annotate(f"{tile} tile at {data['target_density']:.0%} density",
                     (len(labels) - 0.42, budget), fontsize=7.6, color=C_DEPTH,
                     va="bottom", ha="right")
+    # The bars are synthesis area. What a tile has to hold is the post-route
+    # area, which is larger by every buffer placement and routing inserted, so
+    # the one geometry that has been hardened is marked where it really lands.
+    routed = post_route_area()
+    if routed is not None:
+        idx = min(range(len(areas)),
+                  key=lambda i: abs(areas[i] - ship["area_um2"]))
+        ax.plot([idx], [routed], marker="v", markersize=9, color=C_WIN,
+                zorder=5, linestyle="none")
+        ax.annotate(f"shipped, post-route: {routed:.0f} um2",
+                    (idx, routed), fontsize=7.6, color=C_WIN, va="bottom",
+                    ha="center", xytext=(0, 7), textcoords="offset points")
     style(ax, "Measured top-level cell area by array geometry "
               "(green = shipped configuration)", "um2")
     ax.tick_params(axis="x", labelsize=7.5)

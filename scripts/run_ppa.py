@@ -35,16 +35,25 @@ MULTS = [(0, "Baugh-Wooley array"), (1, "Baugh-Wooley + Wallace"),
          (2, "Booth radix-4 + Wallace")]
 ADDER_WIDTHS = [19, 25, 26, 42]
 
-# Tile geometry for Tiny Tapeout on IHP sg13g2: a 1x1 tile is 167 x 108 um, and
-# an "N x 2" tile is N tiles wide by 2 tall.
+# Tile geometry for Tiny Tapeout on IHP sg13g2. These are not estimates and not
+# a tile pitch multiplied out: each entry is the DIEAREA of the corresponding
+# tt_block_<tile>_pgvdd.def floorplan template in TinyTapeout/tt-support-tools,
+# which is the DEF the hardening flow applies. The 8x2 entry below is the
+# DIE_AREA that appears in the resolved LibreLane config of the shipped run,
+# and LibreLane reports design__die__area = 540938 um2 for it.
 TILE_UM2 = {
-    "1x1": 167.0 * 108.0,
-    "1x2": 167.0 * 216.0,
-    "2x2": 334.0 * 216.0,
-    "3x2": 501.0 * 216.0,
-    "4x2": 668.0 * 216.0,
-    "6x2": 1002.0 * 216.0,
-    "8x2": 1336.0 * 216.0,
+    "1x1": 202.08 * 154.98,     # 31318 um2
+    "1x2": 202.08 * 313.74,     # 63401 um2
+    "2x2": 419.52 * 313.74,     # 131620 um2
+    "3x2": 636.96 * 313.74,     # 199840 um2
+    "4x2": 854.40 * 313.74,     # 268059 um2
+    "6x2": 1289.28 * 313.74,    # 404499 um2
+    "8x2": 1724.16 * 313.74,    # 540938 um2
+    "3x4": 636.96 * 710.64,     # 452649 um2
+    "4x4": 854.40 * 710.64,     # 607171 um2
+    "5x4": 1071.84 * 710.64,    # 761692 um2
+    "6x4": 1289.28 * 710.64,    # 916215 um2
+    "8x4": 1724.16 * 710.64,    # 1225257 um2
 }
 TARGET_DENSITY = 0.60   # PL_TARGET_DENSITY_PCT in src/config.json
 
@@ -299,9 +308,21 @@ def main() -> int:
                     help="skip the geometry sweep")
     ap.add_argument("--reuse", action="store_true",
                     help="re-parse existing logs instead of re-synthesizing")
+    ap.add_argument("--reports-only", action="store_true",
+                    help="rebuild the reports from the measurements already in "
+                         "docs/synth/ppa.json, applying the current TILE_UM2 "
+                         "and TARGET_DENSITY. Nothing is re-synthesized, so "
+                         "the measured areas are untouched.")
     args = ap.parse_args()
     global REUSE
     REUSE = args.reuse
+
+    if args.reports_only:
+        all_data = json.loads((OUT / "ppa.json").read_text())
+        all_data["tiles"] = TILE_UM2
+        all_data["target_density"] = TARGET_DENSITY
+        write_reports(all_data)
+        return 0
 
     all_data = {}
     print("== adders ==")

@@ -163,9 +163,19 @@ one-MAC-per-PE-per-cycle throughput measured on the PE registers themselves, and
 a quantized 16-12-10 MLP run end to end on the RTL.
 
 The adders and multipliers are parameterized generators rather than fixed
-netlists, and all of them are proven bit-identical to each other. Measured area
-and logic depth for every variant, and for thirteen array geometries, are in
+netlists, and each one is formally proved equal to its behavioral reference with
+SymbiYosys: all five adder architectures against `a + b + cin` at 19, 25, 26 and
+42 bits, and all three multiplier architectures against `a * b` over every one
+of the 65536 signed 8x8 operand pairs, crossed with all five final adders. 35
+proofs, all passing, listed in `docs/formal/summary.md`. Measured area and logic
+depth for every variant, and for thirteen array geometries, are in
 `docs/synth/ppa.md`.
+
+The design hardens end to end with LibreLane on `sg13g2`: 189657 um2 of standard
+cells at 36.05% core utilization on the 8x2 tile, zero Magic DRC errors, zero
+Netgen LVS errors and +11.4 ns of setup slack at the slow corner. Signoff metrics
+are in `docs/pnr/metrics.json`. That is a hardened layout, not fabricated
+silicon.
 
 ### External hardware
 

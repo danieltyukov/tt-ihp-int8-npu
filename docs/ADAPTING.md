@@ -94,18 +94,32 @@ Measured areas for thirteen geometries are in `docs/synth/ppa.md`, and
 ## Retargeting the tile size
 
 The criterion used here is cell area at or below 60 percent of the die area,
-matching `PL_TARGET_DENSITY_PCT` in `src/config.json`. Tile die areas, from
-Tiny Tapeout's 167 x 108 um tile on IHP:
+matching `PL_TARGET_DENSITY_PCT` in `src/config.json`. Tile die areas are not
+a pitch multiplied out: each one is the `DIEAREA` of the corresponding
+`tt_block_<tile>_pgvdd.def` floorplan template in `TinyTapeout/tt-support-tools`,
+which is the DEF the hardening flow actually applies.
 
-| tile | die area | budget at 60% |
-| --- | --- | --- |
-| 1x1 | 18036 um2 | 10822 um2 |
-| 1x2 | 36072 um2 | 21643 um2 |
-| 2x2 | 72144 um2 | 43286 um2 |
-| 3x2 | 108216 um2 | 64930 um2 |
-| 4x2 | 144288 um2 | 86573 um2 |
-| 6x2 | 216432 um2 | 129859 um2 |
-| 8x2 | 288576 um2 | 173146 um2 |
+| tile | die | die area | budget at 60% |
+| --- | --- | --- | --- |
+| 1x1 | 202.08 x 154.98 um | 31318 um2 | 18791 um2 |
+| 1x2 | 202.08 x 313.74 um | 63401 um2 | 38040 um2 |
+| 2x2 | 419.52 x 313.74 um | 131620 um2 | 78972 um2 |
+| 3x2 | 636.96 x 313.74 um | 199840 um2 | 119904 um2 |
+| 4x2 | 854.40 x 313.74 um | 268059 um2 | 160836 um2 |
+| 6x2 | 1289.28 x 313.74 um | 404499 um2 | 242699 um2 |
+| 8x2 | 1724.16 x 313.74 um | 540938 um2 | 324563 um2 |
+| 3x4 | 636.96 x 710.64 um | 452649 um2 | 271590 um2 |
+| 4x4 | 854.40 x 710.64 um | 607171 um2 | 364302 um2 |
+| 5x4 | 1071.84 x 710.64 um | 761692 um2 | 457015 um2 |
+| 6x4 | 1289.28 x 710.64 um | 916215 um2 | 549729 um2 |
+| 8x4 | 1724.16 x 710.64 um | 1225257 um2 | 735154 um2 |
+
+Budget against the post-route area, not the Yosys area. On the shipped
+configuration placement and routing add 2450 timing-repair buffers and 1395 hold
+buffers, and cell area goes from 142403 um2 to 189657 um2, a factor of 1.33.
+Sizing a tile from the synthesis number alone picks a tile too small: it says
+4x2 for this design, where the routed netlist would sit at 70.8% and above the
+placement target.
 
 To move to a smaller tile, pick a geometry from the scaling table that fits, set
 the parameters, then:
@@ -116,8 +130,12 @@ make synth                       # measured area for your configuration
 
 and update three things: `tiles:` in `info.yaml`, the area sentence in
 `README.md`, and `CLOCK_PERIOD` in `src/config.json` if your depth changed.
-`scripts/run_ppa.py` prints the smallest tile for every geometry it measures, so
-you do not have to do the arithmetic yourself.
+`scripts/run_ppa.py` prints the smallest tile for every geometry it measures,
+against both the synthesis area and that area scaled by the measured routing
+factor, so you do not have to do the arithmetic yourself. Then push and read the
+real numbers back out of the `gds` workflow with
+`scripts/harvest_pnr.py`, because one hardening run settles what the estimate
+only brackets.
 
 ## Swapping in a different quantized layer
 

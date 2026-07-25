@@ -9,7 +9,8 @@ marker with a table generated from `docs/synth/ppa.json`,
 a no-op, and running it after `make ppa` or `make test` is how the numbers in the
 README stay honest.
 
-  markers: PPA_ADDERS, PPA_MULTS, PPA_SCALING, DEMO_RESULTS, TEST_RESULTS
+  markers: PPA_ADDERS, PPA_MULTS, PPA_SCALING, PNR_RESULTS, FORMAL_RESULTS,
+           DEMO_RESULTS, TEST_RESULTS
 """
 
 from __future__ import annotations
@@ -22,6 +23,9 @@ REPO = Path(__file__).resolve().parent.parent
 README = REPO / "README.md"
 PPA = REPO / "docs" / "synth" / "ppa.json"
 DEMO = REPO / "docs" / "demo_results.json"
+PNR = REPO / "docs" / "pnr" / "metrics.json"
+PLACEMENT = REPO / "docs" / "pnr" / "placement.json"
+FORMAL = REPO / "docs" / "formal" / "summary.json"
 TESTS = REPO / "test"
 
 ADDERS = ["ripple-carry", "Brent-Kung", "Kogge-Stone", "Sklansky", "Han-Carlson"]
@@ -89,30 +93,139 @@ def mults_block(d) -> str:
                     extra))
 
 
+def smallest_tile(area: float, tiles: dict, density: float):
+    for tile, die in sorted(tiles.items(), key=lambda kv: kv[1]):
+        if area <= die * density:
+            return tile, area / die
+    return None, None
+
+
+def route_inflation(d) -> float | None:
+    """Post-route cell area divided by synthesis cell area, measured once.
+
+    Placement and routing insert timing-repair and hold buffers, so a tile has
+    to hold noticeably more cell area than Yosys reports. The shipped
+    configuration is the one geometry that has been hardened, so its ratio is
+    the only measured factor available; applying it to the other rows is an
+    extrapolation and is labelled as one.
+    """
+    if not PNR.is_file():
+        return None
+    m = json.loads(PNR.read_text())
+    return m["design__instance__area__stdcell"] / d["shipped"]["area_um2"]
+
+
 def scaling_block(d) -> str:
     tiles = d["tiles"]
     dens = d["target_density"]
+    infl = route_inflation(d)
     items = sorted(d["geometries"].values(), key=lambda r: r["area_um2"])
     rows = []
     for r in items:
-        best = None
-        for tile, die in sorted(tiles.items(), key=lambda kv: kv[1]):
-            if r["area_um2"] <= die * dens:
-                best = tile
-                break
+        best, frac = smallest_tile(r["area_um2"], tiles, dens)
         ship = (r["rows"], r["cols"], r["s_max"]) == (4, 2, 6)
-        rows.append([
+        row = [
             f"**{r['rows']}x{r['cols']}**" if ship else f"{r['rows']}x{r['cols']}",
             r["s_max"], r["rows"] * r["cols"], r["cell_count"],
             f"{r['area_um2']:.0f}", r["flop_count"], r["logic_depth"],
-            best or "over 8x2",
-            f"{r['area_um2'] / tiles[best]:.1%}" if best else "",
-            "shipped" if ship else "",
-        ])
-    return ("Every geometry below was synthesized and measured, not estimated:\n\n"
-            + table(["array", "S_MAX", "MACs/cycle", "cells", "area (um2)",
-                     "registers", "depth", "smallest tile", "density", ""],
-                    rows))
+            f"{best} at {frac:.1%}" if best else "over 8x4",
+        ]
+        if infl is not None:
+            routed, r_frac = smallest_tile(r["area_um2"] * infl, tiles, dens)
+            row.append(f"{routed} at {r_frac:.1%}" if routed else "over 8x4")
+        row.append("shipped" if ship else "")
+        rows.append(row)
+
+    header = ["array", "S_MAX", "MACs/cycle", "cells", "synth area (um2)",
+              "registers", "depth", "smallest tile, synth area"]
+    lead = "Every geometry below was synthesized and measured, not estimated:"
+    if infl is not None:
+        header.append(f"smallest tile, x{infl:.2f} route")
+        lead += (f"\n\nThe last two columns apply the 60% criterion twice: once"
+                 f" to the Yosys cell area, and once to that area scaled by"
+                 f" {infl:.2f}, which is the synthesis-to-post-route cell area"
+                 f" ratio measured on the shipped configuration. Only the"
+                 f" shipped row has been hardened, so the scaled column is an"
+                 f" extrapolation from that one data point.")
+    header.append("")
+    return lead + "\n\n" + table(header, rows)
+
+
+def pnr_block() -> str:
+    m = json.loads(PNR.read_text())
+    p = json.loads(PLACEMENT.read_text())
+    prov = p["provenance"]
+    die = m["design__die__area"]
+    stdcell = m["design__instance__area__stdcell"]
+    rows = [
+        ["die", f"{p['die_width_um']} x {p['die_height_um']} um, "
+                f"{die} um2 (8x2 tile)"],
+        ["standard cells", f"{stdcell} um2 in "
+                           f"{m['design__instance__count__stdcell']} instances"],
+        ["core utilization", f"**{m['design__instance__utilization']:.2%}**"],
+        ["cell area vs the die", f"{stdcell / die:.2%}"],
+        ["decap and fill", f"{m['design__instance__area__class:fill_cell']:.0f} "
+                           f"um2 in {p['instances_fill']} instances"],
+        ["registers", f"{m['design__instance__count__class:sequential_cell']}"],
+        ["buffers inserted for timing repair",
+         f"{m['design__instance__count__class:timing_repair_buffer']}"],
+        ["buffers inserted for hold",
+         f"{m['design__instance__count__hold_buffer']}"],
+        ["clock buffers and inverters",
+         f"{m['design__instance__count__class:clock_buffer']} + "
+         f"{m['design__instance__count__class:clock_inverter']}"],
+        ["logic placed between",
+         f"x = {p['logic_x_min_um']} um and x = {p['logic_x_max_um']} um, "
+         f"{p['logic_x_span_fraction']:.1%} of the die width"],
+        ["routed wirelength", f"{m['route__wirelength']} um"],
+        ["setup slack, slow corner (1.08 V, 125 C)",
+         f"**+{m['timing__setup__ws__corner:nom_slow_1p08V_125C']:.2f} ns** "
+         f"at a 25 ns period"],
+        ["hold slack, fast corner (1.32 V, -40 C)",
+         f"+{m['timing__hold__ws__corner:nom_fast_1p32V_m40C']:.3f} ns"],
+        ["worst clock skew, setup",
+         f"{m['clock__skew__worst_setup__corner:nom_slow_1p08V_125C']:.3f} ns"],
+        ["Magic DRC errors", f"**{m['magic__drc_error__count']}**"],
+        ["Netgen LVS errors", f"**{m['design__lvs_error__count']}**"],
+        ["detailed-route DRC errors", f"**{m['route__drc_errors']}**"],
+        ["antenna violations", f"{m['route__antenna_violation__count']}"],
+        ["total power estimate", f"{1000 * m['power__total']:.1f} mW"],
+    ]
+    return (
+        f"Signoff metrics from the `gds` workflow, run "
+        f"[{prov['github_run_id']}]"
+        f"(https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/"
+        f"{prov['github_run_id']}), hardened with {prov['flow']} against "
+        f"`{prov['pdk']}` at PDK commit `{prov['pdk_version'][:12]}`. Copied "
+        f"verbatim into [docs/pnr/metrics.json](docs/pnr/metrics.json) by "
+        f"`scripts/harvest_pnr.py`.\n\n"
+        + table(["", ""], rows))
+
+
+def formal_block() -> str:
+    d = json.loads(FORMAL.read_text())
+    return (
+        f"`scripts/run_formal.py` proves each arithmetic variant equal to its "
+        f"behavioral reference: `a + b + cin` for adders, `a * b` for "
+        f"multipliers. Engine: {d['engine']}. A pass is therefore a "
+        f"correctness proof over the whole input space, not an agreement check "
+        f"between two implementations, and it is what makes the area and depth "
+        f"differences in the PPA tables the only differences.\n\n"
+        f"**{d['passed']} of {d['proofs']} proofs pass**, "
+        f"{d['wall_seconds']:.0f}s of wall time. Full table in "
+        f"[docs/formal/summary.md](docs/formal/summary.md).\n\n"
+        + table(["what is proved", "variants", "inputs per proof", "result"], [
+            ["`npu_adder` equals `a + b + cin`",
+             "5 architectures x 19, 25, 26 and 42 bits",
+             "2**39 to 2**85",
+             f"{sum(r['status'] == 'pass' for r in d['results'] if r['kind'] == 'adder')}"
+             f"/{sum(r['kind'] == 'adder' for r in d['results'])} pass"],
+            ["`npu_mult` equals `a * b`",
+             "3 partial-product styles x 5 final adders",
+             "all 65536 signed 8x8 pairs",
+             f"{sum(r['status'] == 'pass' for r in d['results'] if r['kind'] == 'mult')}"
+             f"/{sum(r['kind'] == 'mult' for r in d['results'])} pass"],
+        ]))
 
 
 def demo_block(d) -> str:
@@ -168,6 +281,10 @@ def main() -> int:
         text = mark("PPA_MULTS", mults_block(d), text)
         if d.get("geometries"):
             text = mark("PPA_SCALING", scaling_block(d), text)
+    if PNR.is_file() and PLACEMENT.is_file():
+        text = mark("PNR_RESULTS", pnr_block(), text)
+    if FORMAL.is_file():
+        text = mark("FORMAL_RESULTS", formal_block(), text)
     if DEMO.is_file():
         text = mark("DEMO_RESULTS", demo_block(json.loads(DEMO.read_text())),
                     text)

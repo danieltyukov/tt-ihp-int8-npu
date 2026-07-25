@@ -393,6 +393,12 @@ real cost of a systolic array on a tile with no SRAM, and it is why the geometry
 sweep in `docs/synth/ppa.md` shows area growing faster with `S_MAX` than
 intuition suggests.
 
+Synthesis area is a floor, not the number a tile has to hold. The hardened run
+in `docs/pnr/metrics.json` ends with 11225 standard cells covering 189657 um2:
+the 8118 mapped cells plus 2450 buffers inserted to repair timing, 1395 to
+repair hold and 220 clock buffers and inverters. That is 1.33 times the Yosys
+figure, and it is the number the tile-size criterion in README.md is applied to.
+
 Design decisions that came out of measuring rather than guessing:
 
 - No compute enable in the PE (self-flushing array): saves about 3900 um2.

@@ -1,0 +1,49 @@
+{
+  "die_box_um": [
+    0.0,
+    0.0,
+    1724.16,
+    313.74
+  ],
+  "die_width_um": 1724.16,
+  "die_height_um": 313.74,
+  "instances_total": 42526,
+  "instances_fill": 31301,
+  "instances_logic": 11225,
+  "logic_x_min_um": 2.88,
+  "logic_x_max_um": 1023.36,
+  "logic_y_min_um": 3.78,
+  "logic_y_max_um": 306.18,
+  "logic_width_um": 1020.48,
+  "logic_x_span_fraction": 0.5919,
+  "x_histogram_bins": 20,
+  "x_histogram": [
+    931,
+    1243,
+    1233,
+    1203,
+    1075,
+    1196,
+    1024,
+    803,
+    712,
+    714,
+    672,
+    419,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "provenance": {
+    "github_run_id": "30171991004",
+    "commit": "fee59e85",
+    "flow": "LibreLane 3.0.0.dev44",
+    "pdk": "ihp-sg13g2",
+    "pdk_version": "cb7daaa8901016cf7c5d272dfa322c41f024931f"
+  }
+}

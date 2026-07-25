@@ -21,6 +21,7 @@ help:
 	@echo "make test       cocotb accelerator suite"
 	@echo "make test-all   accelerator suite, variant equivalence and the NN demo"
 	@echo "make trace      capture simulation data for the figures"
+	@echo "make formal     prove every arithmetic variant against a + b / a * b"
 	@echo "make synth      Yosys area and depth for the shipped configuration"
 	@echo "make ppa        full PPA comparison, writes docs/synth/ppa.{md,json}"
 	@echo "make images     regenerate every figure in docs/img"
@@ -63,6 +64,10 @@ test-all: test
 .PHONY: trace
 trace: $(VENV_OK)
 	cd test && PATH=$(CURDIR)/.venv/bin:$$PATH $(MAKE) trace
+
+.PHONY: formal
+formal: $(VENV_OK)
+	$(PY) scripts/run_formal.py
 
 .PHONY: synth
 synth:

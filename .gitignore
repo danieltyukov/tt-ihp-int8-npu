@@ -32,3 +32,8 @@ docs/synth/*.log
 # Editors
 .DS_Store
 .idea
+
+# Formal proof work directories (scripts/run_formal.py regenerates them)
+build/formal/
+formal/*.sby
+formal/*/

@@ -1,0 +1,528 @@
+{
+  "engine": "SymbiYosys bmc, smtbmc z3, depth 1",
+  "proofs": 35,
+  "passed": 35,
+  "wall_seconds": 488.4,
+  "results": [
+    {
+      "kind": "adder",
+      "name": "adder_width19_arch0",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 19,
+        "ARCH": 0
+      },
+      "label": "ripple-carry, 19-bit",
+      "space": "2**39",
+      "status": "pass",
+      "seconds": 0.4,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width19_arch1",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 19,
+        "ARCH": 1
+      },
+      "label": "Brent-Kung, 19-bit",
+      "space": "2**39",
+      "status": "pass",
+      "seconds": 0.6,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width19_arch2",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 19,
+        "ARCH": 2
+      },
+      "label": "Kogge-Stone, 19-bit",
+      "space": "2**39",
+      "status": "pass",
+      "seconds": 0.7,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width19_arch3",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 19,
+        "ARCH": 3
+      },
+      "label": "Sklansky, 19-bit",
+      "space": "2**39",
+      "status": "pass",
+      "seconds": 0.5,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width19_arch4",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 19,
+        "ARCH": 4
+      },
+      "label": "Han-Carlson, 19-bit",
+      "space": "2**39",
+      "status": "pass",
+      "seconds": 0.6,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width25_arch0",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 25,
+        "ARCH": 0
+      },
+      "label": "ripple-carry, 25-bit",
+      "space": "2**51",
+      "status": "pass",
+      "seconds": 0.5,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width25_arch1",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 25,
+        "ARCH": 1
+      },
+      "label": "Brent-Kung, 25-bit",
+      "space": "2**51",
+      "status": "pass",
+      "seconds": 0.7,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width25_arch2",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 25,
+        "ARCH": 2
+      },
+      "label": "Kogge-Stone, 25-bit",
+      "space": "2**51",
+      "status": "pass",
+      "seconds": 0.9,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width25_arch3",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 25,
+        "ARCH": 3
+      },
+      "label": "Sklansky, 25-bit",
+      "space": "2**51",
+      "status": "pass",
+      "seconds": 0.6,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width25_arch4",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 25,
+        "ARCH": 4
+      },
+      "label": "Han-Carlson, 25-bit",
+      "space": "2**51",
+      "status": "pass",
+      "seconds": 0.7,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width26_arch0",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 26,
+        "ARCH": 0
+      },
+      "label": "ripple-carry, 26-bit",
+      "space": "2**53",
+      "status": "pass",
+      "seconds": 0.5,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width26_arch1",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 26,
+        "ARCH": 1
+      },
+      "label": "Brent-Kung, 26-bit",
+      "space": "2**53",
+      "status": "pass",
+      "seconds": 0.6,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width26_arch2",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 26,
+        "ARCH": 2
+      },
+      "label": "Kogge-Stone, 26-bit",
+      "space": "2**53",
+      "status": "pass",
+      "seconds": 1.0,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width26_arch3",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 26,
+        "ARCH": 3
+      },
+      "label": "Sklansky, 26-bit",
+      "space": "2**53",
+      "status": "pass",
+      "seconds": 0.7,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width26_arch4",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 26,
+        "ARCH": 4
+      },
+      "label": "Han-Carlson, 26-bit",
+      "space": "2**53",
+      "status": "pass",
+      "seconds": 0.9,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width42_arch0",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 42,
+        "ARCH": 0
+      },
+      "label": "ripple-carry, 42-bit",
+      "space": "2**85",
+      "status": "pass",
+      "seconds": 0.9,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width42_arch1",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 42,
+        "ARCH": 1
+      },
+      "label": "Brent-Kung, 42-bit",
+      "space": "2**85",
+      "status": "pass",
+      "seconds": 0.9,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width42_arch2",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 42,
+        "ARCH": 2
+      },
+      "label": "Kogge-Stone, 42-bit",
+      "space": "2**85",
+      "status": "pass",
+      "seconds": 2.3,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width42_arch3",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 42,
+        "ARCH": 3
+      },
+      "label": "Sklansky, 42-bit",
+      "space": "2**85",
+      "status": "pass",
+      "seconds": 1.2,
+      "returncode": 0
+    },
+    {
+      "kind": "adder",
+      "name": "adder_width42_arch4",
+      "top": "miter_adder",
+      "params": {
+        "WIDTH": 42,
+        "ARCH": 4
+      },
+      "label": "Han-Carlson, 42-bit",
+      "space": "2**85",
+      "status": "pass",
+      "seconds": 1.9,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul0_add0",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 0,
+        "ADD_ARCH": 0
+      },
+      "label": "Baugh-Wooley array, ripple-carry final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 90.8,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul0_add1",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 0,
+        "ADD_ARCH": 1
+      },
+      "label": "Baugh-Wooley array, Brent-Kung final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 120.4,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul0_add2",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 0,
+        "ADD_ARCH": 2
+      },
+      "label": "Baugh-Wooley array, Kogge-Stone final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 94.3,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul0_add3",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 0,
+        "ADD_ARCH": 3
+      },
+      "label": "Baugh-Wooley array, Sklansky final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 148.1,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul0_add4",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 0,
+        "ADD_ARCH": 4
+      },
+      "label": "Baugh-Wooley array, Han-Carlson final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 114.4,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul1_add0",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 1,
+        "ADD_ARCH": 0
+      },
+      "label": "Baugh-Wooley + Wallace, ripple-carry final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 112.0,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul1_add1",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 1,
+        "ADD_ARCH": 1
+      },
+      "label": "Baugh-Wooley + Wallace, Brent-Kung final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 78.5,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul1_add2",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 1,
+        "ADD_ARCH": 2
+      },
+      "label": "Baugh-Wooley + Wallace, Kogge-Stone final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 105.2,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul1_add3",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 1,
+        "ADD_ARCH": 3
+      },
+      "label": "Baugh-Wooley + Wallace, Sklansky final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 82.3,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul1_add4",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 1,
+        "ADD_ARCH": 4
+      },
+      "label": "Baugh-Wooley + Wallace, Han-Carlson final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 93.1,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul2_add0",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 2,
+        "ADD_ARCH": 0
+      },
+      "label": "Booth radix-4 + Wallace, ripple-carry final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 71.7,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul2_add1",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 2,
+        "ADD_ARCH": 1
+      },
+      "label": "Booth radix-4 + Wallace, Brent-Kung final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 76.5,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul2_add2",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 2,
+        "ADD_ARCH": 2
+      },
+      "label": "Booth radix-4 + Wallace, Kogge-Stone final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 73.5,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul2_add3",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 2,
+        "ADD_ARCH": 3
+      },
+      "label": "Booth radix-4 + Wallace, Sklansky final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 65.8,
+      "returncode": 0
+    },
+    {
+      "kind": "mult",
+      "name": "mult_mul2_add4",
+      "top": "miter_mult",
+      "params": {
+        "A_W": 8,
+        "B_W": 8,
+        "MUL_ARCH": 2,
+        "ADD_ARCH": 4
+      },
+      "label": "Booth radix-4 + Wallace, Han-Carlson final adder",
+      "space": "2**16",
+      "status": "pass",
+      "seconds": 68.3,
+      "returncode": 0
+    }
+  ]
+}

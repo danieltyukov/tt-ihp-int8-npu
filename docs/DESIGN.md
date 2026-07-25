@@ -446,7 +446,7 @@ doubt. Every hardware result is compared against it.
 | area | test | what it proves |
 | --- | --- | --- |
 | arithmetic | `tb_arith.sv` (iverilog) | all 65536 signed 8x8 operand pairs against every multiplier architecture, plus randomized adder sweeps at four widths |
-| arithmetic | `test_arith.py` (cocotb) | every adder and multiplier architecture is bit-identical to the others and to Python integers |
+| arithmetic | `test_arith.py` (cocotb) | every adder and multiplier architecture bit-identical to the others and to Python integers; 4096 operand pairs by default, exhaustive at `NPU_ARITH_STRIDE=1` |
 | signedness | `test_int8_minimum` | `-128`, the asymmetric INT8 minimum, in weights and activations, including `-128 * -128` |
 | range | `test_extreme_tensors` | all-zero and all-rail tensors |
 | saturation | `test_saturation_both_rails` | both INT8 rails and the sticky `sat` flag, and that `CLR` clears it |

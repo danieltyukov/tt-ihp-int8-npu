@@ -453,6 +453,8 @@ def protocol_timing() -> None:
     s.text(24, y + 54, "busy rises two cycles after the RUN byte: one to "
                        "register the command, one for the sequencer to start.",
            11, MUTED)
+    s.text(24, y + 74, "This run takes 217 cycles, so it continues past the "
+                       "window; done rises when it finishes.", 11, MUTED)
     s.save(IMG / "protocol_timing.svg")
 
 

@@ -27,11 +27,14 @@ project:
 
   top_module:   "tt_um_danieltyukov_int8_npu"
 
-  # Measured cell area is 142403 um2 (Yosys against the IHP sg13g2 liberty),
-  # which is 49.3% of the 8x2 die area. A 6x2 tile would be 65.8%, above the
-  # 60% placement target in src/config.json. README.md has the full
-  # justification and the measured alternatives.
-  tiles: "8x2"
+  # Chosen from a hardening run, not from synthesis area. Yosys reports 142403
+  # um2 of cells, but placement and routing add timing-repair and hold buffers
+  # and the routed design is 190566 um2, which is 48.5% of the 6x2 core and
+  # under the 60% PL_TARGET_DENSITY_PCT in src/config.json. 6x2 signs off with
+  # zero DRC, zero LVS and +12.5 ns of slow-corner setup slack. The 8x2 tile
+  # this shipped on before is also clean but 25% larger die for no gain.
+  # README.md has both measurements.
+  tiles: "6x2"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

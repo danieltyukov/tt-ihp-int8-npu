@@ -115,11 +115,16 @@ which is the DEF the hardening flow actually applies.
 | 8x4 | 1724.16 x 710.64 um | 1225257 um2 | 735154 um2 |
 
 Budget against the post-route area, not the Yosys area. On the shipped
-configuration placement and routing add 2450 timing-repair buffers and 1395 hold
-buffers, and cell area goes from 142403 um2 to 189657 um2, a factor of 1.33.
+configuration placement and routing add 2530 timing-repair buffers and 1474 hold
+buffers, and cell area goes from 142403 um2 to 190566 um2, a factor of 1.34.
 Sizing a tile from the synthesis number alone picks a tile too small: it says
-4x2 for this design, where the routed netlist would sit at 70.8% and above the
-placement target.
+4x2 for this design, where the routed netlist would sit at about 73% and above
+the placement target.
+
+Treat all of that as the shortlist, not the answer. Hardening is a 45 minute CI
+job on a throwaway branch, and this project settled 6x2 against 8x2 by running
+both and comparing signoff, which is the only comparison that is not an
+extrapolation.
 
 To move to a smaller tile, pick a geometry from the scaling table that fits, set
 the parameters, then:

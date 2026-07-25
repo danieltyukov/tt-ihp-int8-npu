@@ -171,11 +171,12 @@ proofs, all passing, listed in `docs/formal/summary.md`. Measured area and logic
 depth for every variant, and for thirteen array geometries, are in
 `docs/synth/ppa.md`.
 
-The design hardens end to end with LibreLane on `sg13g2`: 189657 um2 of standard
-cells at 36.05% core utilization on the 8x2 tile, zero Magic DRC errors, zero
-Netgen LVS errors and +11.4 ns of setup slack at the slow corner. Signoff metrics
-are in `docs/pnr/metrics.json`. That is a hardened layout, not fabricated
-silicon.
+The design hardens end to end with LibreLane on `sg13g2`: 190566 um2 of standard
+cells at 48.5% core utilization on the 6x2 tile, zero Magic DRC errors, zero
+Netgen LVS errors, zero routing DRC errors and +12.5 ns of setup slack at the
+slow corner. The tile size was settled by hardening both 6x2 and 8x2 to signoff
+and comparing, not by scaling the synthesis area. Signoff metrics for both are
+in `docs/pnr/`. That is a hardened layout, not fabricated silicon.
 
 ### External hardware
 

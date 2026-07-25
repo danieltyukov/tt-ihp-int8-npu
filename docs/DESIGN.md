@@ -393,11 +393,18 @@ real cost of a systolic array on a tile with no SRAM, and it is why the geometry
 sweep in `docs/synth/ppa.md` shows area growing faster with `S_MAX` than
 intuition suggests.
 
-Synthesis area is a floor, not the number a tile has to hold. The hardened run
-in `docs/pnr/metrics.json` ends with 11225 standard cells covering 189657 um2:
-the 8118 mapped cells plus 2450 buffers inserted to repair timing, 1395 to
-repair hold and 220 clock buffers and inverters. That is 1.33 times the Yosys
-figure, and it is the number the tile-size criterion in README.md is applied to.
+Synthesis area is a floor, not the number a tile has to hold. The shipped 6x2
+run in `docs/pnr/metrics.json` ends with 11304 standard cells covering
+190566 um2: the 8118 mapped cells plus 2530 buffers inserted to repair timing,
+1474 to repair hold, and clock buffers and inverters. That is 1.34 times the
+Yosys figure, and it is the number the tile-size criterion in README.md is
+applied to.
+
+The tile size was not settled by that criterion alone. Both 6x2 and 8x2 were
+hardened to signoff and compared, and `docs/pnr/alt-8x2/metrics.json` keeps the
+8x2 result: same RTL, 25% more die, 1.1 ns less setup slack, 16 um more routed
+wirelength, and no cell placed past 59% of the die width. The estimate says what
+to try; the run says what to ship.
 
 Design decisions that came out of measuring rather than guessing:
 

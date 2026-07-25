@@ -87,7 +87,13 @@ def main() -> int:
                     help="GitHub Actions run id this came from")
     ap.add_argument("--commit", default=None,
                     help="commit sha this came from")
+    ap.add_argument("--out-dir", type=Path, default=OUT,
+                    help="where to write, default docs/pnr. Use a subdirectory "
+                         "for a run that is not the shipped configuration.")
+    ap.add_argument("--label", default=None,
+                    help="what this run is, recorded in the provenance block")
     args = ap.parse_args()
+    out = args.out_dir
 
     final = args.run / "final"
     metrics = json.loads((final / "metrics.json").read_text())
@@ -98,6 +104,7 @@ def main() -> int:
     placement = read_def(defs[0])
     pdk = json.loads((args.run / "pdk.json").read_text())
     placement["provenance"] = {
+        "label": args.label,
         "github_run_id": args.run_id,
         "commit": args.commit,
         "flow": f"{pdk.get('FLOW_NAME')} {pdk.get('FLOW_VERSION')}",
@@ -105,9 +112,9 @@ def main() -> int:
         "pdk_version": pdk.get("PDK_VERSION"),
     }
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
-    (OUT / "placement.json").write_text(json.dumps(placement, indent=2) + "\n")
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
+    (out / "placement.json").write_text(json.dumps(placement, indent=2) + "\n")
 
     print(f"die           {placement['die_width_um']} x "
           f"{placement['die_height_um']} um "
@@ -119,7 +126,7 @@ def main() -> int:
     print(f"logic extent  x {placement['logic_x_min_um']} .. "
           f"{placement['logic_x_max_um']} um "
           f"({placement['logic_x_span_fraction']:.1%} of the die width)")
-    print(f"wrote {OUT / 'metrics.json'} and {OUT / 'placement.json'}")
+    print(f"wrote {out / 'metrics.json'} and {out / 'placement.json'}")
     return 0
 
 

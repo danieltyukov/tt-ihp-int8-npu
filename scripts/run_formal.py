@@ -175,6 +175,12 @@ def main() -> int:
     elapsed = time.monotonic() - start
 
     passed = sum(r["status"] == "pass" for r in results)
+    if args.only:
+        # A partial run must not leave a summary that looks like a full one.
+        print(f"\n{passed}/{len(results)} passed in {elapsed:.0f}s "
+              f"(--only {args.only}, reports not written)")
+        return 0 if passed == len(results) else 1
+
     summary = {
         "engine": "SymbiYosys bmc, smtbmc z3, depth 1",
         "proofs": len(results),

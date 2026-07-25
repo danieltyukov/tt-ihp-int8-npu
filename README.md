@@ -1,5 +1,9 @@
 # tt-ihp-int8-npu
 
+[![test](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/test.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/test.yaml)
+[![gds](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/gds.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/gds.yaml)
+[![docs](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/docs.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/docs.yaml)
+
 A signed INT8 neural-network inference accelerator for the
 [Tiny Tapeout](https://tinytapeout.com) IHP 130 nm open-source PDK shuttle: a
 weight-stationary systolic MAC array with a complete integer-only
@@ -27,10 +31,10 @@ Tapeout shuttle.
 | activations | identity, ReLU, ReLU6, shift-based leaky ReLU, selectable at runtime |
 | host interface | framed byte protocol, 12 opcodes, 4 readback sources, sticky error codes |
 | synthesis area | 142403 um2 of standard cells (8118 cells, 1137 registers) |
-| post-route area | 189657 um2 of standard cells in 11225 instances, 36.05% core utilization |
-| tile | 8x2, a 1724.16 x 313.74 um die of 540938 um2 |
+| post-route area | 190566 um2 of standard cells in 11304 instances, 48.49% core utilization |
+| tile | 6x2, a 1289.28 x 313.74 um die of 404499 um2, picked by hardening 6x2 and 8x2 and comparing |
 | hardening | 0 Magic DRC errors, 0 Netgen LVS errors, 0 routing DRC errors, 0 antenna violations |
-| clock target | 40 MHz: +4.6 ns setup slack from OpenSTA after synthesis, +11.4 ns after routing, both at the slow corner |
+| clock target | 40 MHz: +4.6 ns setup slack from OpenSTA after synthesis, +12.5 ns after routing, both at the slow corner |
 
 The arithmetic is not a fixed netlist. Five adder architectures and three
 multiplier architectures are parameterized generators, selected by a number,
@@ -308,47 +312,46 @@ The shipped configuration uses `ADD_ARCH=4` (Han-Carlson) and `MUL_ARCH=1`
 <!--PPA_SCALING-->
 Every geometry below was synthesized and measured, not estimated:
 
-The last two columns apply the 60% criterion twice: once to the Yosys cell area, and once to that area scaled by 1.33, which is the synthesis-to-post-route cell area ratio measured on the shipped configuration. Only the shipped row has been hardened, so the scaled column is an extrapolation from that one data point.
+The last two columns apply the 60% criterion twice: once to the Yosys cell area, and once to that area scaled by 1.34, which is the synthesis-to-post-route cell area ratio measured on the shipped configuration. Only the shipped row has been hardened, so the scaled column is an extrapolation from that one data point.
 
-| array | S_MAX | MACs/cycle | cells | synth area (um2) | registers | depth | smallest tile, synth area | smallest tile, x1.33 route |  |
+| array | S_MAX | MACs/cycle | cells | synth area (um2) | registers | depth | smallest tile, synth area | smallest tile, x1.34 route |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2x2 | 2 | 4 | 3918 | 65508 | 554 | 35 | 2x2 at 49.8% | 3x2 at 43.7% |  |
-| 2x2 | 4 | 4 | 4705 | 83687 | 723 | 35 | 3x2 at 41.9% | 3x2 at 55.8% |  |
-| 4x2 | 2 | 8 | 5899 | 92995 | 733 | 32 | 3x2 at 46.5% | 4x2 at 46.2% |  |
-| 4x2 | 4 | 8 | 6718 | 114070 | 935 | 29 | 3x2 at 57.1% | 4x2 at 56.7% |  |
-| 2x2 | 8 | 4 | 6604 | 126700 | 1051 | 38 | 4x2 at 47.3% | 6x2 at 41.7% |  |
-| 4x2 | 5 | 8 | 7785 | 132631 | 1041 | 34 | 4x2 at 49.5% | 6x2 at 43.7% |  |
-| **4x2** | 6 | 8 | 8118 | 142403 | 1137 | 35 | 4x2 at 53.1% | 6x2 at 46.9% | shipped |
-| 2x4 | 4 | 8 | 7966 | 145147 | 1215 | 29 | 4x2 at 54.1% | 6x2 at 47.8% |  |
-| 6x2 | 4 | 12 | 8896 | 145372 | 1145 | 29 | 4x2 at 54.2% | 6x2 at 47.9% |  |
-| 8x2 | 2 | 16 | 9826 | 148825 | 1099 | 31 | 4x2 at 55.5% | 6x2 at 49.0% |  |
-| 4x2 | 8 | 8 | 8788 | 162109 | 1329 | 35 | 6x2 at 40.1% | 6x2 at 53.4% |  |
-| 4x4 | 2 | 16 | 10665 | 166112 | 1237 | 29 | 6x2 at 41.1% | 6x2 at 54.7% |  |
-| 8x2 | 4 | 16 | 10751 | 174925 | 1369 | 29 | 6x2 at 43.2% | 6x2 at 57.6% |  |
-| 4x4 | 4 | 16 | 11778 | 199360 | 1569 | 29 | 6x2 at 49.3% | 3x4 at 58.7% |  |
+| 2x2 | 2 | 4 | 3918 | 65508 | 554 | 35 | 2x2 at 49.8% | 3x2 at 43.9% |  |
+| 2x2 | 4 | 4 | 4705 | 83687 | 723 | 35 | 3x2 at 41.9% | 3x2 at 56.0% |  |
+| 4x2 | 2 | 8 | 5899 | 92995 | 733 | 32 | 3x2 at 46.5% | 4x2 at 46.4% |  |
+| 4x2 | 4 | 8 | 6718 | 114070 | 935 | 29 | 3x2 at 57.1% | 4x2 at 56.9% |  |
+| 2x2 | 8 | 4 | 6604 | 126700 | 1051 | 38 | 4x2 at 47.3% | 6x2 at 41.9% |  |
+| 4x2 | 5 | 8 | 7785 | 132631 | 1041 | 34 | 4x2 at 49.5% | 6x2 at 43.9% |  |
+| **4x2** | 6 | 8 | 8118 | 142403 | 1137 | 35 | 4x2 at 53.1% | 6x2 at 47.1% | shipped |
+| 2x4 | 4 | 8 | 7966 | 145147 | 1215 | 29 | 4x2 at 54.1% | 6x2 at 48.0% |  |
+| 6x2 | 4 | 12 | 8896 | 145372 | 1145 | 29 | 4x2 at 54.2% | 6x2 at 48.1% |  |
+| 8x2 | 2 | 16 | 9826 | 148825 | 1099 | 31 | 4x2 at 55.5% | 6x2 at 49.2% |  |
+| 4x2 | 8 | 8 | 8788 | 162109 | 1329 | 35 | 6x2 at 40.1% | 6x2 at 53.6% |  |
+| 4x4 | 2 | 16 | 10665 | 166112 | 1237 | 29 | 6x2 at 41.1% | 6x2 at 55.0% |  |
+| 8x2 | 4 | 16 | 10751 | 174925 | 1369 | 29 | 6x2 at 43.2% | 6x2 at 57.9% |  |
+| 4x4 | 4 | 16 | 11778 | 199360 | 1569 | 29 | 6x2 at 49.3% | 3x4 at 58.9% |  |
 
 ![area scaling](docs/img/area_scaling.png)
 
 The criterion is cell area at or below 60% of the die area, matching
 `PL_TARGET_DENSITY_PCT` in `src/config.json`. Die areas come from the
 `tt_block_<tile>_pgvdd.def` floorplan templates the hardening flow applies, so
-the 8x2 die is 1724.16 x 313.74 um, or 540938 um2. The shipped configuration
-synthesizes to **142403 um2**, 26.3% of that die.
+the 6x2 die is 1289.28 x 313.74 um, or 404499 um2. The shipped configuration
+synthesizes to **142403 um2**, 35.2% of that die.
 
 Synthesis area is not what the tile has to hold. Placement and routing insert
-2450 timing-repair buffers and 1395 hold buffers, and the design arrives at
-signoff with **189657 um2** of standard cells, 1.33 times the Yosys figure.
-Against the 60% criterion that rules out a 4x2 tile, where the routed design
-would sit at 70.8%, and leaves 6x2 at 46.9% as the smallest tile that meets it.
+about 2500 timing-repair buffers and about 1400 hold buffers, and the design
+arrives at signoff with **190566 um2** of standard cells, 1.34 times the Yosys
+figure. Against the 60% criterion that leaves 6x2, at 48.5% of the core, as the
+smallest tile the estimate allows.
 
-The shipped tile is 8x2, one size larger, and the final placement says so
-plainly: every standard cell in the design sits at x <= 1023.4 um, so the right
-700 um of the die holds nothing but decap fill. 8x2 was chosen from a tile table
-that turned out to be wrong; the numbers above are the corrected ones. What the
-extra tile buys is routing margin, and this design used it: detailed routing
-started at 3297 DRC violations and needed five iterations to reach zero.
-[The 6x2 hardening](#the-6x2-alternative) below is the measurement of what
-happens without that margin.
+This project shipped on 8x2 first, chosen from a tile-area table that turned out
+to be wrong. Rather than argue the estimate, both tiles were hardened all the
+way to signoff and [measured side by side](#tiles-that-were-actually-hardened).
+6x2 wins on every axis: a die 25% smaller, more setup slack, shorter wires, the
+same zero-error signoff, and the same five routing iterations. 8x2 bought
+nothing, and its final placement said so, with no cell beyond x = 1023.4 um on a
+1724.16 um die.
 
 This is a large project by Tiny Tapeout standards, and the reason is registers
 rather than arithmetic. A resettable flip-flop in sg13g2 is 48.99 um2 and a
@@ -381,62 +384,88 @@ possible, which is why the shipped configuration keeps `S_MAX = 6`.
 
 The design hardens end to end in the Tiny Tapeout `gds` workflow: LibreLane
 takes the RTL through synthesis, floorplanning, placement, CTS, routing and
-signoff against the IHP `sg13g2` PDK. This is a hardened layout, not silicon.
-Nothing here has been fabricated, and a shuttle submission still has to go
-through Tiny Tapeout.
+signoff against the IHP `sg13g2` PDK, then `precheck` runs the shuttle rule
+checks and `gl_test` replays the whole cocotb suite on the resulting netlist.
+This is a hardened layout, not silicon. Nothing here has been fabricated, and a
+shuttle submission still has to go through Tiny Tapeout.
+
+Explore the result in the browser, rotated and layer by layer:
+**[3D GDS viewer](https://gds-viewer.tinytapeout.com/?model=https://danieltyukov.github.io/tt-ihp-int8-npu/tinytapeout.oas&pdk=ihp-sg13g2)**.
+The `viewer` job publishes the OASIS straight out of the hardening run to
+[GitHub Pages](https://danieltyukov.github.io/tt-ihp-int8-npu/), which redirects
+to the same viewer, so the model is the current one on every push to `main`.
 
 <!--PNR_RESULTS-->
-Signoff metrics from the `gds` workflow, run [30171991004](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30171991004), hardened with LibreLane 3.0.0.dev44 against `ihp-sg13g2` at PDK commit `cb7daaa89010`. Copied verbatim into [docs/pnr/metrics.json](docs/pnr/metrics.json) by `scripts/harvest_pnr.py`.
+Signoff metrics from the `gds` workflow, run [30173902710](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30173902710), hardened with LibreLane 3.0.0.dev44 against `ihp-sg13g2` at PDK commit `cb7daaa89010`. Copied verbatim into [docs/pnr/metrics.json](docs/pnr/metrics.json) by `scripts/harvest_pnr.py`.
 
 |  |  |
 | --- | --- |
-| die | 1724.16 x 313.74 um, 540938 um2 (8x2 tile) |
-| standard cells | 189657 um2 in 11225 instances |
-| core utilization | **36.05%** |
-| cell area vs the die | 35.06% |
-| decap and fill | 336482 um2 in 31301 instances |
+| die | 1289.28 x 313.74 um, 404499 um2 (6x2 tile) |
+| standard cells | 190566 um2 in 11304 instances |
+| core utilization | **48.49%** |
+| cell area vs the die | 47.11% |
+| decap and fill | 202422 um2 in 20085 instances |
 | registers | 1137 |
-| buffers inserted for timing repair | 2450 |
-| buffers inserted for hold | 1395 |
-| clock buffers and inverters | 206 + 14 |
-| logic placed between | x = 2.88 um and x = 1023.36 um, 59.2% of the die width |
-| routed wirelength | 398341 um |
-| setup slack, slow corner (1.08 V, 125 C) | **+11.40 ns** at a 25 ns period |
-| hold slack, fast corner (1.32 V, -40 C) | +0.106 ns |
-| worst clock skew, setup | 0.392 ns |
+| buffers inserted for timing repair | 2530 |
+| buffers inserted for hold | 1474 |
+| clock buffers and inverters | 204 + 15 |
+| logic placed between | x = 4.8 um and x = 855.84 um, 66.0% of the die width |
+| routed wirelength | 382408 um |
+| setup slack, slow corner (1.08 V, 125 C) | **+12.54 ns** at a 25 ns period |
+| hold slack, fast corner (1.32 V, -40 C) | +0.114 ns |
+| worst clock skew, setup | 0.393 ns |
 | Magic DRC errors | **0** |
 | Netgen LVS errors | **0** |
 | detailed-route DRC errors | **0** |
 | antenna violations | 0 |
-| total power estimate | 9.8 mW |
+| total power estimate | 9.7 mW |
 
-![hardened 8x2 die](docs/img/layout_die.png)
+![hardened 6x2 die](docs/img/layout_die.png)
 
-The whole 1724.16 x 313.74 um die. The regularly spaced vertical stripes are
-the power straps at the 38.87 um PDN pitch, not array structure: LibreLane
-flattens the module hierarchy during synthesis and renames every cell, so
-nothing in the layout is grouped by processing element and the systolic
-structure is not visible here. It is visible in the architecture diagram and in
-the dataflow figure, both of which come from the RTL.
+The whole 1289.28 x 313.74 um die. Two textures: the mottled blue-green region
+on the left is standard-cell logic, and the uniform magenta on the right is
+decap fill, meeting at x = 856 um. The evenly spaced vertical stripes crossing
+both are the power straps at the 38.87 um PDN pitch.
+
+There is no visible array structure and there should not be. LibreLane flattens
+the module hierarchy during synthesis and renames every cell, so no group of
+cells in this layout corresponds to a processing element. The systolic structure
+lives in the architecture diagram and the dataflow figure, both taken from the
+RTL.
 
 ![standard-cell detail](docs/img/layout_detail.png)
 
-A 44 x 22 um crop, about 0.3% of the die. Six standard-cell rows, each with its
-own VDD and VSS rails, individual cells with their diffusion and poly, the
-routing above them, and two power straps crossing vertically.
+A 44 x 22 um crop, 0.3% of the die. Six standard-cell rows, each with its own
+VDD and VSS rails, individual cells with their diffusion and poly, the routing
+above them, and two power straps crossing vertically.
 
 ![logic to fill boundary](docs/img/layout_fill_edge.png)
 
-A 160 x 80 um crop across x = 1023 um, where the design ends. Irregular logic
-cells on the left, the strict repeating pattern of identical decap fill cells
-on the right. This is the picture of the 8x2 tile being larger than the design
-needs.
+A 160 x 80 um crop across x = 856 um, where the design ends. Irregular logic
+cells on the left, the strict repeating pattern of identical decap fill cells on
+the right. The placer packs to about 73% locally and leaves the remainder as
+fill rather than spreading out, which is why a smaller tile is not simply free.
 
-### The 6x2 alternative
+### Tiles that were actually hardened
 
-<!--TILE_6X2-->
-_Pending: the same RTL hardened at 6x2, measured on the
-`experiment/tile-6x2` branch._
+<!--TILE_RUNS-->
+The same RTL, hardened at each tile size and taken all the way to signoff. Runs: [6x2 (shipped)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30173902710), [8x2](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30171991004).
+
+|  | 6x2 (shipped) | 8x2 |
+| --- | --- | --- |
+| die | 1289.28 x 313.74 um | 1724.16 x 313.74 um |
+| die area | 404499 um2 | 540938 um2 |
+| standard cells | 190566 um2 | 189657 um2 |
+| cell instances | 11304 | 11225 |
+| core utilization | 48.49% | 36.05% |
+| logic reaches | x = 855.84 um (66% of the width) | x = 1023.36 um (59% of the width) |
+| decap and fill instances | 20085 | 31301 |
+| routed wirelength | 382408 um | 398341 um |
+| routing iterations to 0 DRC | 5 | 5 |
+| setup slack, slow corner | +12.54 ns | +11.40 ns |
+| hold slack, fast corner | +0.114 ns | +0.106 ns |
+| total power | 9.7 mW | 9.8 mW |
+| Magic DRC / Netgen LVS / route DRC / antenna | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 |
 
 ## Clock target
 
@@ -635,18 +664,24 @@ docs/
 
 ## Which CI jobs can actually run
 
-| workflow | runs here | notes |
-| --- | --- | --- |
-| `test` | yes | lint, accelerator suite, variant equivalence, NN demo |
-| `docs` | needs TT infrastructure | uses `TinyTapeout/tt-gds-action/docs` |
-| `gds` | needs TT infrastructure | hardening, precheck, gate-level test and the GDS viewer all run inside Tiny Tapeout's action against the shuttle's PDK setup |
-| `fpga` | needs TT infrastructure | disabled by default in the template |
+| workflow | job | status | what it does |
+| --- | --- | --- | --- |
+| `test` | `test` | passing | Verilator lint, the accelerator suite, arithmetic-variant equivalence and the end-to-end NN demo |
+| `gds` | `gds` | passing | LibreLane hardening to GDS against the shuttle's PDK setup |
+| `gds` | `precheck` | passing | Tiny Tapeout's shuttle rule checks on the hardened result |
+| `gds` | `gl_test` | passing | the accelerator suite replayed on the gate-level netlist |
+| `gds` | `viewer` | passing | publishes the OASIS to GitHub Pages for the 3D viewer |
+| `docs` | `docs` | passing | builds the datasheet page from `docs/info.md` and `info.yaml` |
+| `fpga` | `fpga` | not run | `branches: none` in the template, an ICE40UP5K bitstream for the TT ASIC simulator |
 
-The `gds`, `docs` and `fpga` jobs are included because a shuttle submission needs
-them, but they depend on Tiny Tapeout's own tooling and cannot be validated
-outside it, so there are no badges for them here. The checks that would otherwise
-stay invisible until hardening (area, logic depth, inferred latches, unmapped
-cells) are done locally instead, by `make ppa`.
+All four `gds` jobs are self-contained: no secrets, no Tiny Tapeout API, nothing
+that only works inside the organisation, so a fork gets the same results. The
+badges above are the real state of `main`.
+
+`make formal` and `make ppa` are not in CI because they need `sby`, `z3` and the
+IHP liberty, which is a large download the workflows do not pull. Their outputs
+are committed instead, under `docs/formal/` and `docs/synth/`, and both scripts
+regenerate them from scratch.
 
 ## Using this as a template
 

@@ -31,6 +31,17 @@ TESTS = REPO / "test"
 ADDERS = ["ripple-carry", "Brent-Kung", "Kogge-Stone", "Sklansky", "Han-Carlson"]
 MULTS = ["Baugh-Wooley array", "Baugh-Wooley + Wallace", "Booth radix-4 + Wallace"]
 
+# Tiny Tapeout ihp-sg13g2 die sizes, keyed by (width, height) in um, from the
+# tt_block_<tile>_pgvdd.def templates. Used to name a harvested run by its tile.
+TILE_BY_DIE = {
+    (202.08, 154.98): "1x1", (202.08, 313.74): "1x2",
+    (419.52, 313.74): "2x2", (636.96, 313.74): "3x2",
+    (854.40, 313.74): "4x2", (1289.28, 313.74): "6x2",
+    (1724.16, 313.74): "8x2", (636.96, 710.64): "3x4",
+    (854.40, 710.64): "4x4", (1071.84, 710.64): "5x4",
+    (1289.28, 710.64): "6x4", (1724.16, 710.64): "8x4",
+}
+
 
 def table(header: list[str], rows: list[list[str]]) -> str:
     out = ["| " + " | ".join(header) + " |",
@@ -157,9 +168,10 @@ def pnr_block() -> str:
     prov = p["provenance"]
     die = m["design__die__area"]
     stdcell = m["design__instance__area__stdcell"]
+    tile = TILE_BY_DIE.get((p["die_width_um"], p["die_height_um"]), "custom")
     rows = [
         ["die", f"{p['die_width_um']} x {p['die_height_um']} um, "
-                f"{die} um2 (8x2 tile)"],
+                f"{die} um2 ({tile} tile)"],
         ["standard cells", f"{stdcell} um2 in "
                            f"{m['design__instance__count__stdcell']} instances"],
         ["core utilization", f"**{m['design__instance__utilization']:.2%}**"],
@@ -200,6 +212,61 @@ def pnr_block() -> str:
         f"verbatim into [docs/pnr/metrics.json](docs/pnr/metrics.json) by "
         f"`scripts/harvest_pnr.py`.\n\n"
         + table(["", ""], rows))
+
+
+def tile_runs_block() -> str:
+    """Every tile size this RTL has actually been hardened at, side by side."""
+    runs = [(PNR.parent, "shipped")]
+    runs += [(d, None) for d in sorted(PNR.parent.glob("alt-*"))
+             if (d / "metrics.json").is_file()]
+
+    cols, rows = [], []
+    for d, note in runs:
+        m = json.loads((d / "metrics.json").read_text())
+        p = json.loads((d / "placement.json").read_text())
+        tile = TILE_BY_DIE.get((p["die_width_um"], p["die_height_um"]),
+                               f"{p['die_width_um']}x{p['die_height_um']} um")
+        cols.append((tile + (" (shipped)" if note else ""), m, p))
+
+    def row(label, fn):
+        return [label] + [fn(m, p) for _, m, p in cols]
+
+    rows = [
+        row("die", lambda m, p: f"{p['die_width_um']} x {p['die_height_um']} um"),
+        row("die area", lambda m, p: f"{m['design__die__area']} um2"),
+        row("standard cells",
+            lambda m, p: f"{m['design__instance__area__stdcell']} um2"),
+        row("cell instances",
+            lambda m, p: f"{m['design__instance__count__stdcell']}"),
+        row("core utilization",
+            lambda m, p: f"{m['design__instance__utilization']:.2%}"),
+        row("logic reaches",
+            lambda m, p: f"x = {p['logic_x_max_um']} um "
+                         f"({p['logic_x_span_fraction']:.0%} of the width)"),
+        row("decap and fill instances", lambda m, p: f"{p['instances_fill']}"),
+        row("routed wirelength", lambda m, p: f"{m['route__wirelength']} um"),
+        row("routing iterations to 0 DRC",
+            lambda m, p: str(1 + max(int(k.split(":")[1]) for k in m
+                                     if k.startswith("route__drc_errors__iter")))),
+        row("setup slack, slow corner",
+            lambda m, p: f"+{m['timing__setup__ws__corner:nom_slow_1p08V_125C']:.2f} ns"),
+        row("hold slack, fast corner",
+            lambda m, p: f"+{m['timing__hold__ws__corner:nom_fast_1p32V_m40C']:.3f} ns"),
+        row("total power",
+            lambda m, p: f"{1000 * m['power__total']:.1f} mW"),
+        row("Magic DRC / Netgen LVS / route DRC / antenna",
+            lambda m, p: f"{m['magic__drc_error__count']} / "
+                         f"{m['design__lvs_error__count']} / "
+                         f"{m['route__drc_errors']} / "
+                         f"{m['route__antenna_violation__count']}"),
+    ]
+    ids = ", ".join(
+        f"[{t}]"
+        f"(https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/"
+        f"{p['provenance']['github_run_id']})" for t, _m, p in cols)
+    return (f"The same RTL, hardened at each tile size and taken all the way to "
+            f"signoff. Runs: {ids}.\n\n"
+            + table([""] + [t for t, _m, _p in cols], rows))
 
 
 def formal_block() -> str:
@@ -283,6 +350,7 @@ def main() -> int:
             text = mark("PPA_SCALING", scaling_block(d), text)
     if PNR.is_file() and PLACEMENT.is_file():
         text = mark("PNR_RESULTS", pnr_block(), text)
+        text = mark("TILE_RUNS", tile_runs_block(), text)
     if FORMAL.is_file():
         text = mark("FORMAL_RESULTS", formal_block(), text)
     if DEMO.is_file():

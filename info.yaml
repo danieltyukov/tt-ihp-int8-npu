@@ -1,0 +1,119 @@
+# Tiny Tapeout project information
+yaml_version: 6
+
+project:
+  title:        "Signed INT8 Systolic NPU with TFLite-style Requantization"
+  author:       "Daniel Tyukov"
+  discord:      ""
+  description:  "4x2 weight-stationary systolic array of signed INT8 MACs with an integer-only requantization pipeline, per-channel scales, four activation functions and a framed byte protocol"
+  language:     "SystemVerilog"
+  clock_hz:     40000000
+
+  source_files:
+    - "npu_adder.sv"
+    - "npu_csa_reduce.sv"
+    - "npu_pp_baugh_wooley.sv"
+    - "npu_pp_booth4.sv"
+    - "npu_mult.sv"
+    - "npu_pe.sv"
+    - "npu_array.sv"
+    - "npu_requant.sv"
+    - "npu_activation.sv"
+    - "npu_host_if.sv"
+    - "npu_core.sv"
+    - "tt_um_danieltyukov_int8_npu.sv"
+
+  top_module:   "tt_um_danieltyukov_int8_npu"
+
+  # Measured cell area is 142403 um2 (Yosys against the IHP sg13g2 liberty),
+  # which is 49.3% of the 8x2 die area. A 6x2 tile would be 65.8%, above the
+  # 60% placement target in src/config.json. README.md has the full
+  # justification and the measured alternatives.
+  tiles: "8x2"
+
+# The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
+pinout:
+  # Inputs
+  ui[0]: "data_in[0]"
+  ui[1]: "data_in[1]"
+  ui[2]: "data_in[2]"
+  ui[3]: "data_in[3]"
+  ui[4]: "data_in[4]"
+  ui[5]: "data_in[5]"
+  ui[6]: "data_in[6]"
+  ui[7]: "data_in[7]"
+
+  # Outputs
+  uo[0]: "data_out[0]"
+  uo[1]: "data_out[1]"
+  uo[2]: "data_out[2]"
+  uo[3]: "data_out[3]"
+  uo[4]: "data_out[4]"
+  uo[5]: "data_out[5]"
+  uo[6]: "data_out[6]"
+  uo[7]: "data_out[7]"
+
+  # Bidirectional pins
+  uio[0]: "wr (in): sample data_in on this edge"
+  uio[1]: "is_cmd (in): 1 = opcode byte, 0 = payload byte"
+  uio[2]: "rd (in): advance the readback pointer"
+  uio[3]: "busy (out)"
+  uio[4]: "done (out)"
+  uio[5]: "err (out, sticky)"
+  uio[6]: "sat (out, sticky output saturation)"
+  uio[7]: "ovf (out, sticky accumulator overflow)"
+
+documentation:
+  inputs:
+    - "data_in[7:0]: command or payload byte, sampled when wr is high"
+  outputs:
+    - "data_out[7:0]: readback byte at the current pointer (results, raw accumulators, status or identity block)"
+  bidirectional:
+    - "wr: write strobe for data_in"
+    - "is_cmd: marks data_in as an opcode byte rather than payload"
+    - "rd: advances the readback pointer after this cycle"
+    - "busy: a run is in progress; writes are rejected while it is high"
+    - "done: results are ready to read"
+    - "err: sticky protocol error (unknown opcode, write while busy, frame length)"
+    - "sat: sticky, an output saturated at an INT8 rail"
+    - "ovf: sticky, an accumulator saturated"
+  how_it_works: >
+    A 4x2 weight-stationary systolic array of signed INT8 multiply-accumulate
+    cells with a full integer-only requantization pipeline. Weights stay
+    resident in the processing elements, activations stream west to east one
+    element per cycle with a diagonal skew, and partial sums accumulate north to
+    south, so every processing element performs one MAC per cycle for as long as
+    activations keep arriving. The array holds six activation vectors on chip
+    and computes eight MACs per cycle at full rate.
+    Column sums land in a per-channel accumulator bank that is initialised with
+    the INT32-domain bias and accumulates across passes, so a layer with more
+    than four inputs is computed as several accumulating runs. A shared serial
+    requantizer then applies the standard affine path: multiply by a per-channel
+    Q0.16 fixed-point multiplier, arithmetic right shift with round-to-nearest
+    and ties away from zero (the gemmlowp and TFLite rule), add the output zero
+    point and saturate to INT8. Identity, ReLU, ReLU6 and a shift-based leaky
+    ReLU are selectable at runtime, all expressed relative to the output zero
+    point, with programmable clamp bounds.
+    The adders and multipliers are parameterized generators, not fixed netlists:
+    five adder architectures (ripple-carry, Brent-Kung, Kogge-Stone, Sklansky,
+    Han-Carlson) and three multiplier styles (Baugh-Wooley array, Baugh-Wooley
+    with a Wallace tree, radix-4 Booth with a Wallace tree) are selected by
+    parameter and compared with measured Yosys area and logic depth in the
+    repository.
+  how_to_test: >
+    Drive a framed byte protocol on the pins. Every frame is one opcode byte
+    (is_cmd high) followed by a fixed number of payload bytes.
+    1. Release rst_n.
+    2. 0x10 then one byte: sample count minus one.
+    3. 0x20 then 8 bytes: the weight tile in row-major order.
+    4. 0x30 then 24 bytes: activations, sample-major.
+    5. 0x40 then 6 bytes: two 24-bit little-endian biases.
+    6. 0x50 then 6 bytes: per channel, 16-bit multiplier then shift.
+    7. 0x60 then 4 bytes: zero point, clamp low, clamp high, activation select.
+    8. 0x72 to run with requantization; wait for busy to fall.
+    9. 0x80 then one byte 0x00 to point at the results, then raise rd to walk
+       the result bytes out on data_out.
+    Opcode 0xF0 selects a self-describing identity block that reports the array
+    geometry, so host software can discover the configuration. The full command
+    table, status bits and error codes are in README.md and docs/info.md.
+  external_hw: "None. A microcontroller or FPGA that can drive nine pins is enough to load a layer and read the results."

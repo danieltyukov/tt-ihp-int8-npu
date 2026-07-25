@@ -1,0 +1,60 @@
+name: test
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Install iverilog and verilator
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y iverilog verilator
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install Python packages
+        shell: bash
+        run: pip install -r test/requirements.txt
+
+      - name: Verilator lint
+        run: make lint
+
+      - name: Accelerator suite
+        run: |
+          cd test
+          make clean
+          make
+          ! grep failure results.xml
+
+      - name: Arithmetic variant equivalence
+        run: |
+          cd test
+          make -f Makefile.arith clean
+          make -f Makefile.arith
+          ! grep failure results_arith.xml
+
+      - name: End-to-end neural network demo
+        run: |
+          cd test
+          make demo
+          ! grep failure results_demo.xml
+
+      - name: Test summary
+        uses: test-summary/action@v2.4
+        with:
+          paths: "test/results*.xml"
+        if: always()
+
+      - name: Upload waveforms and results
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: |
+            test/tb.fst
+            test/results*.xml

@@ -71,20 +71,25 @@ def build_script(top: str, params: dict[str, int], liberty: Path,
     if params:
         sets = " ".join(f"-set {k} {v}" for k, v in params.items())
         lines.append(f"chparam {sets} {top}")
+    abc = f"abc {'-fast ' if effort == 'fast' else ''}-liberty {liberty}"
     lines += [
         f"hierarchy -top {top} -check",
         f"synth -top {top} -flatten",
         "check -assert",
-    ]
-    # Map the combinational logic first and measure depth while the registers
-    # are still generic $_DFF_ cells, which is what `ltp -noff` can recognise;
-    # only then map the registers so that `stat` reports real cell area.
-    lines.append(f"abc {'-fast ' if effort == 'fast' else ''}-liberty {liberty}")
-    lines += [
+        "design -save prepped",
+        # Depth pass: map only the combinational logic, so the registers are
+        # still generic $_DFF_ cells and `ltp -noff` can stop at them.
+        abc,
         "setundef -zero",
         "opt_clean -purge",
         "ltp -noff",
+        # Area pass, in the order a real flow uses: map the registers first,
+        # then run ABC, so the multiplexers dfflibmap emits for enable flops
+        # (sg13g2 has no enable flop) get mapped and counted too.
+        "design -load prepped",
         f"dfflibmap -liberty {liberty}",
+        abc,
+        "setundef -zero",
         "opt_clean -purge",
         f"stat -liberty {liberty}",
     ]
@@ -94,9 +99,20 @@ def build_script(top: str, params: dict[str, int], liberty: Path,
 
 
 def parse_report(text: str) -> dict:
+    """Extract the numbers from a Yosys log.
+
+    Yosys prints `stat` more than once: the `synth` script ends with one over
+    generic cells, and the explicit `stat -liberty` at the end of the flow
+    reports the mapped netlist. Only the last one describes real cells, so every
+    figure here is taken from the final block.
+    """
     out: dict = {"cells": {}}
 
-    m = re.search(r"Number of cells:\s+(\d+)", text)
+    # The final statistics block starts at the last "Number of cells:".
+    starts = [m.start() for m in re.finditer(r"Number of cells:", text)]
+    tail = text[starts[-1]:] if starts else text
+
+    m = re.search(r"Number of cells:\s+(\d+)", tail)
     out["cell_count"] = int(m.group(1)) if m else None
 
     m = re.search(r"Chip area for module [^:]*:\s+([0-9.]+)", text)
@@ -105,20 +121,15 @@ def parse_report(text: str) -> dict:
     m = re.search(r"Longest topological path.*?length=(\d+)", text, re.S)
     out["logic_depth"] = int(m.group(1)) if m else None
 
-    m = re.search(r"Number of wires:\s+(\d+)", text)
-    out["wires"] = int(m.group(1)) if m else None
+    wires = re.findall(r"Number of wires:\s+(\d+)", text)
+    out["wires"] = int(wires[-1]) if wires else None
 
-    in_stat = False
-    for line in text.splitlines():
-        if re.match(r"\s+Number of cells:", line):
-            in_stat = True
-            continue
-        if in_stat:
-            mm = re.match(r"\s+(\S+)\s+(\d+)\s*$", line)
-            if mm:
-                out["cells"][mm.group(1)] = int(mm.group(2))
-            elif line.strip() == "":
-                in_stat = False
+    for line in tail.splitlines()[1:]:
+        mm = re.match(r"\s+(\S+)\s+(\d+)\s*$", line)
+        if mm:
+            out["cells"][mm.group(1)] = int(mm.group(2))
+        elif line.strip() == "":
+            break
     # A sequential cell count separates flop area from combinational area.
     out["flop_count"] = sum(n for c, n in out["cells"].items()
                             if re.search(r"_s?dfr|_s?dfb|_dl[hl]", c))
@@ -138,6 +149,8 @@ def main() -> int:
     ap.add_argument("--netlist", action="store_true",
                     help="also write the mapped gate-level netlist")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--reuse", action="store_true",
+                    help="re-parse an existing log instead of running Yosys")
     args = ap.parse_args()
 
     if not shutil.which("yosys"):
@@ -155,15 +168,19 @@ def main() -> int:
     log = outdir / f"{name}.{args.effort}.log"
     netlist = (outdir / f"{name}.{args.effort}.netlist.v") if args.netlist else None
 
-    script = build_script(args.top, params, liberty, args.effort, netlist)
-    proc = subprocess.run(["yosys", "-p", script],
-                          capture_output=True, text=True)
-    log.write_text(proc.stdout + proc.stderr)
-    if proc.returncode != 0:
-        sys.stderr.write(proc.stdout[-4000:] + proc.stderr[-4000:])
-        sys.exit(f"yosys failed for {name} (see {log})")
+    if args.reuse and log.is_file():
+        out = log.read_text()
+    else:
+        script = build_script(args.top, params, liberty, args.effort, netlist)
+        proc = subprocess.run(["yosys", "-p", script],
+                              capture_output=True, text=True)
+        log.write_text(proc.stdout + proc.stderr)
+        if proc.returncode != 0:
+            sys.stderr.write(proc.stdout[-4000:] + proc.stderr[-4000:])
+            sys.exit(f"yosys failed for {name} (see {log})")
+        out = proc.stdout
 
-    res = parse_report(proc.stdout)
+    res = parse_report(out)
     res.update({"name": name, "top": args.top, "params": params,
                 "effort": args.effort, "liberty": liberty.name})
     (outdir / f"{name}.{args.effort}.json").write_text(json.dumps(res, indent=2))

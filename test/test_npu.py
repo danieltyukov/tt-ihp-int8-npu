@@ -10,6 +10,7 @@ it actually ran.
 
 from __future__ import annotations
 
+import os
 import random
 
 import cocotb
@@ -19,6 +20,11 @@ import golden as g
 from npu_driver import Npu
 
 CFG = g.Cfg(rows=4, cols=2, s_max=6, acc_w=24, m_w=16, sh_w=5)
+
+# Number of randomized layer configurations. The default is what the committed
+# results were produced with; lower it for a quicker smoke run.
+SWEEP_CASES = int(os.environ.get("NPU_SWEEP_CASES", "120"))
+MULTIPASS_CASES = int(os.environ.get("NPU_MULTIPASS_CASES", "30"))
 
 # Effective scale of 1/2 with M normalized: the mid-range case used whenever a
 # test cares about something other than the scale itself.
@@ -206,7 +212,7 @@ async def test_saturation_both_rails(dut):
     assert not npu.ovf, "the accumulator itself did not overflow"
 
     await npu.frame(g.OP_CLR)
-    await npu.sample()
+    await npu.settle()
     assert not npu.sat, "CLR must clear the sticky sat flag"
 
 
@@ -234,7 +240,7 @@ async def test_accumulator_overflow(dut):
     # negative products over several passes.
     await npu.frame(g.OP_CLR)
     await npu.frame(g.OP_SRST)
-    await npu.sample()
+    await npu.settle()
     assert not npu.ovf, "CLR and SRST must clear ovf"
     model.reset()
     neg_w = [[-128, -128]] * CFG.rows
@@ -244,7 +250,7 @@ async def test_accumulator_overflow(dut):
         await npu.run(accumulate=(p > 0), requant=False)
         model.run(neg_w, acts, neg_bias, mult, shift, s_count=1,
                   accumulate=(p > 0), requant=False)
-    await npu.sample()
+    await npu.settle()
     assert npu.ovf, "negative accumulator overflow must latch ovf"
     got = await npu.read_acc(0, 0)
     assert got == CFG.acc_min == model.acc[0][0], \
@@ -362,7 +368,7 @@ async def test_random_sweep(dut):
     vectors = 0
     outputs = 0
 
-    for case in range(120):
+    for case in range(SWEEP_CASES):
         model = g.Model(CFG)
         s_count = rng.randint(1, CFG.s_max)
         weights = [rand_i8(rng, CFG.cols) for _ in range(CFG.rows)]
@@ -403,7 +409,7 @@ async def test_random_sweep(dut):
     dut._log.info(f"randomized sweep: {vectors} layer configurations, "
                   f"{outputs} INT8 outputs and {outputs} raw accumulators "
                   f"compared bit-exactly")
-    assert vectors == 120
+    assert vectors == SWEEP_CASES
 
 
 @cocotb.test()
@@ -412,7 +418,7 @@ async def test_random_multipass(dut):
     npu = await setup(dut)
     rng = random.Random(0xBEEF)
     vectors = 0
-    for case in range(30):
+    for case in range(MULTIPASS_CASES):
         passes = rng.randint(2, 4)
         s_count = rng.randint(1, CFG.s_max)
         model = g.Model(CFG)
@@ -568,12 +574,12 @@ async def test_protocol_unknown_opcode(dut):
     for op in (0xB, 0xC, 0xD, 0xE):
         await npu.frame(g.OP_CLR)
         await npu.cmd(op, 0)
-        await npu.sample()
+        await npu.settle()
         assert npu.err, f"opcode {op:#x} should raise err"
         st = await npu.read_status()
         assert (st >> 6) == g.ERR_OPCODE, f"error code {st >> 6} for opcode {op:#x}"
     await npu.frame(g.OP_CLR)
-    await npu.sample()
+    await npu.settle()
     assert not npu.err
     st = await npu.read_status()
     assert (st >> 6) == g.ERR_NONE
@@ -587,7 +593,7 @@ async def test_protocol_frame_length(dut):
 
     # Too many payload bytes for LD_POST (expects 4).
     await npu.frame(g.OP_LD_POST, 0, [0, 0, 0, 0, 0])
-    await npu.sample()
+    await npu.settle()
     assert npu.err
     st = await npu.read_status()
     assert (st >> 6) == g.ERR_FRAME, f"overrun gave code {st >> 6}"
@@ -597,7 +603,7 @@ async def test_protocol_frame_length(dut):
     await npu.cmd(g.OP_LD_W)
     await npu.payload([1])
     await npu.cmd(g.OP_NOP)
-    await npu.sample()
+    await npu.settle()
     assert npu.err, "an incomplete frame must be reported"
     st = await npu.read_status()
     assert (st >> 6) == g.ERR_FRAME
@@ -630,7 +636,7 @@ async def test_protocol_busy_rejection(dut):
     assert npu.busy
     # Try to corrupt the weight tile mid-run.
     await npu.frame(g.OP_LD_W, 0, [0x7F] * (CFG.rows * CFG.cols))
-    await npu.sample()
+    await npu.settle()
     assert npu.err, "a write while busy must raise err"
     await npu.wait_done()
     st = await npu.read_status()
@@ -687,7 +693,7 @@ async def test_soft_reset_midrun(dut):
     await npu.wait_done()
     await npu.frame(g.OP_SRST)
     await npu.tick(2)
-    await npu.sample()
+    await npu.settle()
     assert not npu.busy and not npu.done and not npu.err
     res = await npu.read_results(CFG.s_max * CFG.cols)
     assert res == [0] * (CFG.s_max * CFG.cols), f"SRST left results {res}"
@@ -719,12 +725,12 @@ async def test_hard_reset_midrun(dut):
     assert npu.busy
     dut.rst_n.value = 0
     await npu.tick(2)
-    await npu.sample()
+    await npu.settle()
     assert int(dut.uio_out.value) == 0, "reset must clear all status pins"
     assert dut.uo_out.value.is_resolvable
     dut.rst_n.value = 1
     await npu.tick(2)
-    await npu.sample()
+    await npu.settle()
     assert not npu.busy and not npu.done
 
     res = await npu.read_results(CFG.s_max * CFG.cols)

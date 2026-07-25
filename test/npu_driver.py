@@ -131,6 +131,17 @@ class Npu:
                 return busy_cycles
         raise TimeoutError(f"busy stuck high for {timeout} cycles")
 
+    async def settle(self) -> None:
+        """Wait out the two-cycle path from a command byte to a status pin.
+
+        A command is registered by the host interface in the cycle after the
+        write, and the core acts on it in the cycle after that, so a flag
+        change is only observable from the second cycle onwards.
+        """
+        await ClockCycles(self.dut.clk, 1)
+        self.cycles += 1
+        await FallingEdge(self.dut.clk)
+
     async def read(self, n: int, src: int | None = None,
                    start: int | None = None) -> list[int]:
         """Read n bytes from a readback source, advancing the pointer."""

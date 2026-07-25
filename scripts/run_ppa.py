@@ -49,17 +49,22 @@ TILE_UM2 = {
 TARGET_DENSITY = 0.60   # PL_TARGET_DENSITY_PCT in src/config.json
 
 # Array geometries to measure for the scaling plot.
-GEOMETRIES = [(2, 2, 2), (2, 2, 4), (2, 2, 8), (4, 2, 2), (4, 2, 4), (4, 2, 6),
-              (4, 2, 8), (6, 2, 4), (8, 2, 2), (8, 2, 4), (2, 4, 4), (4, 4, 2),
-              (4, 4, 4)]
+GEOMETRIES = [(2, 2, 2), (2, 2, 4), (2, 2, 8), (4, 2, 2), (4, 2, 4), (4, 2, 5),
+              (4, 2, 6), (4, 2, 8), (6, 2, 4), (8, 2, 2), (8, 2, 4), (2, 4, 4),
+              (4, 4, 2), (4, 4, 4)]
 
 SHIPPED = dict(ROWS=4, COLS=2, S_MAX=6)
+
+
+REUSE = False
 
 
 def synth(top: str, name: str, effort: str, params: dict[str, int],
           netlist: bool = False) -> dict:
     cmd = [sys.executable, str(SYNTH), "--top", top, "--name", name,
            "--effort", effort, "--out", str(OUT), "--quiet"]
+    if REUSE:
+        cmd.append("--reuse")
     for k, v in params.items():
         cmd += ["--param", f"{k}={v}"]
     if netlist:
@@ -292,7 +297,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true",
                     help="skip the geometry sweep")
+    ap.add_argument("--reuse", action="store_true",
+                    help="re-parse existing logs instead of re-synthesizing")
     args = ap.parse_args()
+    global REUSE
+    REUSE = args.reuse
 
     all_data = {}
     print("== adders ==")

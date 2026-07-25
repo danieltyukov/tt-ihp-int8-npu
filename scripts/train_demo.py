@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Train and quantize the demo network, then save everything the RTL test needs.
 
-The network is a 16 -> 8 -> 10 multilayer perceptron over 4x4 handwritten digit
+The network is a 16 -> 12 -> 10 multilayer perceptron over 4x4 handwritten digit
 images, trained in float32 with plain NumPy (no deep-learning framework), then
 quantized to the exact integer pipeline the accelerator implements:
 
@@ -45,7 +45,7 @@ import golden as g  # noqa: E402
 
 CFG = g.Cfg(rows=4, cols=2, s_max=6, acc_w=24, m_w=16, sh_w=5)
 
-N_IN, N_HID, N_OUT = 16, 8, 10
+N_IN, N_HID, N_OUT = 16, 12, 10
 SEED = 20260725
 
 
@@ -88,7 +88,7 @@ def split(x: np.ndarray, y: np.ndarray):
 # ---------------------------------------------------------------------------
 # Float training
 # ---------------------------------------------------------------------------
-def train(xtr: np.ndarray, ytr: np.ndarray, epochs: int = 400):
+def train(xtr: np.ndarray, ytr: np.ndarray, epochs: int = 200):
     rng = np.random.default_rng(SEED + 1)
     w1 = rng.normal(0, np.sqrt(2.0 / N_IN), (N_IN, N_HID))
     b1 = np.zeros(N_HID)
@@ -96,7 +96,7 @@ def train(xtr: np.ndarray, ytr: np.ndarray, epochs: int = 400):
     b2 = np.zeros(N_OUT)
 
     onehot = np.eye(N_OUT)[ytr]
-    lr, batch = 0.15, 32
+    lr, batch = 0.05, 32
     v = [np.zeros_like(t) for t in (w1, b1, w2, b2)]
     for ep in range(epochs):
         idx = rng.permutation(len(xtr))

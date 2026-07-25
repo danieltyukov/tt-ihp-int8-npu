@@ -155,6 +155,21 @@ module npu_core #(
   logic [2:0]        leaky_k_reg;
   logic [S_W-1:0]    s_cnt_m1;
 
+  // An out-of-range sample count is clamped rather than wrapped, which keeps
+  // every buffer index provably inside its array. When S_MAX is a power of two
+  // the field cannot be out of range, so no comparator is built.
+  localparam bit S_MAX_POW2 = ((S_MAX & (S_MAX - 1)) == 0);
+  wire [S_W-1:0] cfg_s_count_m1;
+
+  generate
+    if (S_MAX_POW2) begin : g_cfg_exact
+      assign cfg_s_count_m1 = hb[S_W-1:0];
+    end else begin : g_cfg_clamp
+      assign cfg_s_count_m1 = (hb[S_W-1:0] > S_W'(S_MAX - 1)) ? S_W'(S_MAX - 1)
+                                                              : hb[S_W-1:0];
+    end
+  endgenerate
+
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       act_buf      <= '0;
@@ -170,10 +185,7 @@ module npu_core #(
       if (wr_act)   act_buf   <= {hb, act_buf[ACT_LEN*8-1:8]};
       if (wr_bias)  bias_buf  <= {hb, bias_buf[BIAS_LEN*8-1:8]};
       if (wr_quant) quant_buf <= {hb, quant_buf[QUANT_LEN*8-1:8]};
-      // An out-of-range sample count is clamped rather than wrapped, which
-      // keeps every buffer index provably inside its array.
-      if (wr_cfg)   s_cnt_m1  <= (hb[S_W-1:0] > S_W'(S_MAX - 1)) ? S_W'(S_MAX - 1)
-                                                                 : hb[S_W-1:0];
+      if (wr_cfg)   s_cnt_m1  <= cfg_s_count_m1;
       if (wr_post) begin
         case (post_idx)
           2'd0: zp_reg       <= $signed(hb);

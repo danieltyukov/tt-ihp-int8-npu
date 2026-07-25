@@ -56,3 +56,11 @@ arith:
 everything:
 	$(MAKE) clean && $(MAKE)
 	$(MAKE) -f Makefile.arith clean && $(MAKE) -f Makefile.arith
+
+.PHONY: trace
+trace:
+	$(MAKE) COCOTB_TEST_MODULES=test_trace COCOTB_RESULTS_FILE=results_trace.xml
+
+.PHONY: demo
+demo:
+	$(MAKE) COCOTB_TEST_MODULES=test_demo COCOTB_RESULTS_FILE=results_demo.xml

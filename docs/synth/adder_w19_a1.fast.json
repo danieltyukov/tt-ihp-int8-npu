@@ -1,0 +1,34 @@
+{
+  "cells": {
+    "sg13g2_a21o_1": 1,
+    "sg13g2_a21oi_1": 14,
+    "sg13g2_a221oi_1": 2,
+    "sg13g2_and2_1": 13,
+    "sg13g2_inv_1": 12,
+    "sg13g2_nand2_1": 11,
+    "sg13g2_nand2b_1": 3,
+    "sg13g2_nand3b_1": 1,
+    "sg13g2_nor2_1": 8,
+    "sg13g2_nor2b_1": 3,
+    "sg13g2_nor3_1": 1,
+    "sg13g2_o21ai_1": 11,
+    "sg13g2_or2_2": 2,
+    "sg13g2_xnor2_1": 20,
+    "sg13g2_xor2_1": 16
+  },
+  "cell_count": 118,
+  "area_um2": 1210.2048,
+  "logic_depth": 11,
+  "wires": 103,
+  "flop_count": 0,
+  "blackboxes": [],
+  "latches": [],
+  "name": "adder_w19_a1",
+  "top": "npu_adder",
+  "params": {
+    "WIDTH": 19,
+    "ARCH": 1
+  },
+  "effort": "fast",
+  "liberty": "sg13g2_stdcell_typ_1p20V_25C.lib"
+}

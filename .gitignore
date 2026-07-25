@@ -20,8 +20,14 @@ tt_submission/
 src/user_config.json
 src/config_merged.json
 
-# Vendored PDK liberty (fetch with `make pdk`, see docs/ADAPTING.md)
+# Vendored PDK liberty (fetch it once, see docs/ADAPTING.md)
 pdk/*.lib
+
+# Per-variant Yosys logs: 13 MB of transcript for numbers that are already
+# committed in docs/synth/*.json and docs/synth/ppa.md. `make ppa` recreates
+# them, and --reuse re-parses them if they are still around.
+docs/synth/*.log
+!docs/synth/top_shipped.full.log
 
 # Editors
 .DS_Store

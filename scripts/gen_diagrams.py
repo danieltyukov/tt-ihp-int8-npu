@@ -110,14 +110,14 @@ class Svg:
 # Architecture diagram
 # ---------------------------------------------------------------------------
 def architecture(rows: int = 4, cols: int = 2, s_max: int = 6) -> None:
-    s = Svg(1180, 860, "INT8 systolic accelerator datapath")
+    s = Svg(1240, 920, "INT8 systolic accelerator datapath")
     s.text(24, 34, "tt_um_danieltyukov_int8_npu", 19, INK, weight="600")
     s.text(24, 54,
            f"weight-stationary systolic array, ROWS={rows} COLS={cols} "
            f"S_MAX={s_max}, signed INT8 in, INT8 out", 12, MUTED)
 
     # Host interface -------------------------------------------------------
-    s.rect(24, 78, 210, 208, BLUE_L, BLUE)
+    s.rect(24, 78, 214, 250, BLUE_L, BLUE)
     s.text(36, 100, "host interface", 13, BLUE, weight="600")
     pins = [
         ("ui_in[7:0]", "data byte in"),
@@ -130,25 +130,26 @@ def architecture(rows: int = 4, cols: int = 2, s_max: int = 6) -> None:
         ("uio_out[7:5]", "ovf / sat / err sticky"),
     ]
     for i, (pin, note) in enumerate(pins):
-        y = 122 + i * 21
+        y = 124 + i * 21
         s.text(36, y, pin, 10.5, INK, mono=True)
-        s.text(150, y, note, 9.5, MUTED)
-    s.text(36, 300, "frame = opcode byte + fixed payload;", 10, MUTED)
-    s.text(36, 314, "length checked, errors are sticky", 10, MUTED)
+        s.text(152, y, note, 9.5, MUTED)
+    s.text(36, 302, "frame = opcode byte + fixed payload,", 10, MUTED)
+    s.text(36, 316, "length checked, errors are sticky", 10, MUTED)
 
     # Activation buffer ----------------------------------------------------
-    ax, ay = 268, 78
-    s.rect(ax, ay, 236, 96, GREEN_L, GREEN)
+    ax, ay = 274, 78
+    s.rect(ax, ay, 250, 100, GREEN_L, GREEN)
     s.text(ax + 12, ay + 22, f"activation buffer  {s_max} x {rows} bytes",
            12, GREEN, weight="600")
     s.text(ax + 12, ay + 40, "byte shift chain, no address decoder", 9.5, MUTED)
-    s.text(ax + 12, ay + 58, "read with a diagonal skew:", 10, INK)
-    s.text(ax + 12, ay + 74, "row r sees sample (cycle - r)", 10.5, INK,
+    s.text(ax + 12, ay + 60, "read with a diagonal skew:", 10, INK)
+    s.text(ax + 12, ay + 78, "row r sees sample (cycle - r)", 10.5, INK,
            mono=True)
 
     # PE array -------------------------------------------------------------
-    px, py, pw, ph, gap = 300, 232, 96, 62, 22
-    s.text(px, py - 14, "systolic PE array", 13, INK, weight="600")
+    px, py, pw, ph, gap = 322, 246, 100, 62, 24
+    array_bot = py + rows * (ph + gap) - gap
+    s.text(px + 8, py - 54, "systolic PE array", 13, INK, weight="600")
     for r in range(rows):
         for c in range(cols):
             x = px + c * (pw + gap)
@@ -158,118 +159,124 @@ def architecture(rows: int = 4, cols: int = 2, s_max: int = 6) -> None:
                    weight="600")
             s.text(x + pw / 2, y + 36, f"w = W[{r}][{c}]", 9.5, PURPLE,
                    anchor="middle", mono=True)
-            s.text(x + pw / 2, y + 50, "psum += w*a", 9.5, MUTED,
+            s.text(x + pw / 2, y + 52, "psum += w*a", 9.5, MUTED,
                    anchor="middle", mono=True)
-            # activation east
             if c < cols - 1:
                 s.line(x + pw, y + ph / 2, x + pw + gap, y + ph / 2, GREEN, 1.6,
                        arrow="arrow-green")
             else:
-                s.line(x + pw, y + ph / 2, x + pw + 16, y + ph / 2, GREEN, 1.6)
-                s.text(x + pw + 20, y + ph / 2 + 4, "drop", 8.5, MUTED)
-            # psum south
+                s.line(x + pw, y + ph / 2, x + pw + 18, y + ph / 2, GREEN, 1.6)
+                s.text(x + pw + 22, y + ph / 2 + 4, "drop", 8.5, MUTED)
             if r < rows - 1:
                 s.line(x + pw / 2, y + ph, x + pw / 2, y + ph + gap, BLUE, 1.6,
                        arrow="arrow-blue")
-    # row inputs with skew annotation
+
+    # Skewed row feed from the activation buffer.
     for r in range(rows):
         y = py + r * (ph + gap) + ph / 2
-        s.line(ax + 60, ay + 96, ax + 60, y, GREEN, 1.4)
-        s.line(ax + 60, y, px, y, GREEN, 1.6, arrow="arrow-green")
-        s.text(px - 78, y - 6, f"x[s-{r}][{r}]" if r else "x[s][0]", 9.5, GREEN,
-               mono=True)
-    # north edge zeros
+        s.line(ax + 40, ay + 100, ax + 40, y, GREEN, 1.4)
+        s.line(ax + 40, y, px, y, GREEN, 1.6, arrow="arrow-green")
+        label = "x[s][0]" if r == 0 else f"x[s-{r}][{r}]"
+        s.text(ax + 32, y - 8, label, 9.5, GREEN, anchor="end", mono=True)
+
+    # Zero into the north edge.
     for c in range(cols):
         x = px + c * (pw + gap) + pw / 2
-        s.line(x, py - 34, x, py, BLUE, 1.4, arrow="arrow-blue")
-        s.text(x, py - 40, "0", 10, BLUE, anchor="middle", mono=True)
+        s.line(x, py - 38, x, py, BLUE, 1.4, arrow="arrow-blue")
+        s.text(x + 8, py - 26, "0", 10, BLUE, mono=True)
 
-    s.text(px + 2 * (pw + gap) + 40, py + 8, "activations stream east,", 11,
-           GREEN, weight="600")
-    s.text(px + 2 * (pw + gap) + 40, py + 24, "one PE per cycle", 11, GREEN)
-    s.text(px + 2 * (pw + gap) + 40, py + 52, "partial sums accumulate", 11,
-           BLUE, weight="600")
-    s.text(px + 2 * (pw + gap) + 40, py + 68, "south, one row per cycle", 11,
-           BLUE)
-    s.text(px + 2 * (pw + gap) + 40, py + 96, "weights stay resident:", 11,
-           PURPLE, weight="600")
-    s.text(px + 2 * (pw + gap) + 40, py + 112,
-           f"{rows * cols} bytes shifted in once,", 11, PURPLE)
-    s.text(px + 2 * (pw + gap) + 40, py + 128, "reused by every sample", 11,
-           PURPLE)
-
-    # weight chain (snake, entering the last PE)
+    # Weight chain: enters the last PE, snakes back to the first.
     wx = px + (cols - 1) * (pw + gap) + pw
-    s.path(f"M 246 {py + rows * (ph + gap) + 26} "
-           f"H {wx + 14} V {py + (rows - 1) * (ph + gap) + ph - 12} "
-           f"H {wx}", PURPLE, 1.6, arrow="arrow-purple")
-    s.text(250, py + rows * (ph + gap) + 22, "weight byte chain (reverse "
-           "raster order)", 10, PURPLE)
+    chain_y = array_bot + 40
+    s.path(f"M {px - 46} {chain_y} H {wx + 30} V {py + (rows-1)*(ph+gap) + ph/2} "
+           f"H {wx + 18}", PURPLE, 1.6, arrow="arrow-purple")
+    s.text(px + 150, chain_y - 10, f"weight byte chain, {rows * cols} bytes in "
+                                   f"reverse raster order", 10, PURPLE)
 
     # PE internals blow-up -------------------------------------------------
-    bx, by = 700, 232
-    s.rect(bx, by, 250, 176, "#ffffff", INK, 1.4, dash="4 3")
-    s.text(bx + 12, by + 22, "inside one PE", 12, INK, weight="600")
-    s.rect(bx + 16, by + 36, 74, 30, PURPLE_L, PURPLE, rx=4)
-    s.text(bx + 53, by + 56, "w_reg 8b", 9.5, PURPLE, anchor="middle",
+    bx, by = 700, 190
+    s.rect(bx, by, 258, 182, "#ffffff", INK, 1.4, dash="4 3")
+    s.text(bx + 14, by + 24, "inside one PE", 12, INK, weight="600")
+    s.rect(bx + 16, by + 40, 78, 30, PURPLE_L, PURPLE, rx=4)
+    s.text(bx + 55, by + 60, "w_reg 8b", 9.5, PURPLE, anchor="middle",
            mono=True)
-    s.rect(bx + 16, by + 78, 74, 30, GREEN_L, GREEN, rx=4)
-    s.text(bx + 53, by + 98, "a_reg 8b", 9.5, GREEN, anchor="middle", mono=True)
-    s.rect(bx + 116, by + 52, 56, 42, "#ffffff", ORANGE, rx=4)
-    s.text(bx + 144, by + 70, "signed", 9, ORANGE, anchor="middle")
-    s.text(bx + 144, by + 84, "8x8 mul", 9, ORANGE, anchor="middle")
-    s.rect(bx + 116, by + 112, 56, 34, "#ffffff", BLUE, rx=4)
-    s.text(bx + 144, by + 133, "19b add", 9, BLUE, anchor="middle")
-    s.rect(bx + 190, by + 112, 46, 34, BLUE_L, BLUE, rx=4)
-    s.text(bx + 213, by + 133, "psum", 9, BLUE, anchor="middle", mono=True)
-    s.line(bx + 90, by + 51, bx + 116, by + 62, PURPLE, 1.3,
+    s.rect(bx + 16, by + 84, 78, 30, GREEN_L, GREEN, rx=4)
+    s.text(bx + 55, by + 104, "a_reg 8b", 9.5, GREEN, anchor="middle",
+           mono=True)
+    s.rect(bx + 120, by + 56, 60, 44, "#ffffff", ORANGE, rx=4)
+    s.text(bx + 150, by + 76, "signed", 9, ORANGE, anchor="middle")
+    s.text(bx + 150, by + 90, "8x8 mul", 9, ORANGE, anchor="middle")
+    s.rect(bx + 120, by + 122, 60, 34, "#ffffff", BLUE, rx=4)
+    s.text(bx + 150, by + 143, "19b add", 9, BLUE, anchor="middle")
+    s.rect(bx + 196, by + 122, 48, 34, BLUE_L, BLUE, rx=4)
+    s.text(bx + 220, by + 143, "psum", 9, BLUE, anchor="middle", mono=True)
+    s.line(bx + 94, by + 55, bx + 120, by + 68, PURPLE, 1.3,
            arrow="arrow-purple")
-    s.line(bx + 90, by + 93, bx + 116, by + 84, GREEN, 1.3, arrow="arrow-green")
-    s.line(bx + 144, by + 94, bx + 144, by + 112, ORANGE, 1.3,
+    s.line(bx + 94, by + 99, bx + 120, by + 90, GREEN, 1.3, arrow="arrow-green")
+    s.line(bx + 150, by + 100, bx + 150, by + 122, ORANGE, 1.3,
            arrow="arrow-orange")
-    s.line(bx + 172, by + 129, bx + 190, by + 129, BLUE, 1.3, arrow="arrow-blue")
-    s.text(bx + 12, by + 166, "one MAC per cycle, no compute enable", 9.5,
+    s.line(bx + 180, by + 139, bx + 196, by + 139, BLUE, 1.3, arrow="arrow-blue")
+    s.text(bx + 14, by + 172, "one MAC per cycle, no compute enable", 9.5,
            MUTED)
 
+    # Annotations, safely below the blow-up.
+    nx, ny = 700, 412
+    notes = [
+        (GREEN, "activations stream east", "one PE per cycle, so PE(r,c) sees "
+                                          "the sample from cycle r+c"),
+        (BLUE, "partial sums accumulate south", "one row per cycle, complete at "
+                                                "the bottom of column c"),
+        (PURPLE, "weights stay resident", f"{rows * cols} bytes shifted in once, "
+                                          f"reused by every sample"),
+    ]
+    for i, (col, head, body) in enumerate(notes):
+        y = ny + i * 54
+        s.line(nx, y - 10, nx + 18, y - 10, col, 2.2)
+        s.text(nx + 26, y - 6, head, 11.5, col, weight="600")
+        s.text(nx + 26, y + 12, body, 10, MUTED)
+
     # Result path ----------------------------------------------------------
-    ry = 560
-    s.text(24, ry - 16, "result path, one output element at a time", 13, INK,
+    ry = 620
+    s.text(24, ry - 18, "result path, one output element at a time", 13, INK,
            weight="600")
     blocks = [
         (24, "accumulator bank", f"{cols} banks x {s_max} x 24b",
          "bias on the first pass,\nsaturating accumulate", BLUE, BLUE_L),
-        (258, "serial requantizer", "radix-4 Booth, 9 steps",
+        (262, "serial requantizer", "radix-4 Booth, 9 steps",
          "acc x M, one shared adder", ORANGE, ORANGE_L),
-        (492, "rounding shift", "4 bits then 1 per cycle",
+        (500, "rounding shift", "4 bits then 1 per cycle",
          "ties away from zero", ORANGE, ORANGE_L),
-        (726, "zero point + saturate", "+zp, clamp to INT8",
+        (738, "zero point + saturate", "+zp, clamp to INT8",
          "sticky sat flag", ORANGE, ORANGE_L),
-        (960, "activation", "id / ReLU / ReLU6 / leaky",
+        (976, "activation", "id / ReLU / ReLU6 / leaky",
          "clamp_lo, clamp_hi", GREEN, GREEN_L),
     ]
     for x, title, sub, note, col, fillc in blocks:
-        s.rect(x, ry, 196, 104, fillc, col)
+        s.rect(x, ry, 200, 104, fillc, col)
         s.text(x + 12, ry + 24, title, 11.5, col, weight="600")
         s.text(x + 12, ry + 42, sub, 9.5, INK, mono=True)
         for i, ln in enumerate(note.split("\n")):
             s.text(x + 12, ry + 62 + i * 14, ln, 9.5, MUTED)
-    for x in (220, 454, 688, 922):
+    for x in (224, 462, 700, 938):
         s.line(x, ry + 52, x + 38, ry + 52, LINE, 1.5, arrow="arrow-line")
+
+    # Column sums into the bank.
     for c in range(cols):
         x = px + c * (pw + gap) + pw / 2
-        s.path(f"M {x} {py + rows * (ph + gap) - gap} V {ry - 26} H 122 V {ry}",
-               BLUE, 1.5, arrow="arrow-blue")
-    s.text(126, ry - 32, f"{cols} column sums, one per cycle, staggered by "
-                         f"one cycle per column", 10, BLUE)
+        s.path(f"M {x} {array_bot} V {ry - 44} H 124 V {ry}", BLUE, 1.5,
+               arrow="arrow-blue")
+    s.text(128, ry - 50, f"{cols} column sums, one per cycle, staggered by one "
+                         f"cycle per column", 10, BLUE)
 
-    s.rect(960, ry + 132, 196, 74, "#ffffff", LINE)
-    s.text(972, ry + 154, "result registers", 11.5, INK, weight="600")
-    s.text(972, ry + 172, f"{s_max} x {cols} bytes", 9.5, INK, mono=True)
-    s.text(972, ry + 190, "read back over uo_out", 9.5, MUTED)
-    s.line(1058, ry + 104, 1058, ry + 132, GREEN, 1.5, arrow="arrow-green")
-    s.path(f"M 960 {ry + 169} H 150 V 292", LINE, 1.4, arrow="arrow-line")
-    s.text(160, 306, "readback mux: results, raw accumulators, status, "
-                     "identity block", 10, MUTED)
+    # Result registers and readback.
+    s.rect(976, ry + 150, 200, 78, "#ffffff", LINE)
+    s.text(988, ry + 174, "result registers", 11.5, INK, weight="600")
+    s.text(988, ry + 192, f"{s_max} x {cols} bytes", 9.5, INK, mono=True)
+    s.text(988, ry + 210, "read back over uo_out", 9.5, MUTED)
+    s.line(1076, ry + 104, 1076, ry + 150, GREEN, 1.5, arrow="arrow-green")
+    s.path(f"M 976 {ry + 189} H 60 V 336", LINE, 1.4, arrow="arrow-line")
+    s.text(70, ry + 178, "readback mux: results, raw accumulators, status, "
+                         "identity block", 10, MUTED)
     s.save(IMG / "architecture.svg")
 
 
@@ -346,7 +353,7 @@ def pipeline_timing() -> None:
                GREEN if v == rows * cols else MUTED, anchor="middle")
 
     # Phase bars
-    first = min(min(v) for v in [[i for i in busy_cycles]] ) if busy_cycles else 0
+    first = min(busy_cycles) if busy_cycles else 0
     last = max(busy_cycles) if busy_cycles else 0
     fill_end = first + rows + cols - 2
     y2 = y + cellh + 18
@@ -356,7 +363,8 @@ def pipeline_timing() -> None:
         s.rect(x0, y2, x1 - x0, 22, fillc, col, 1.0, rx=4)
         s.text((x0 + x1) / 2, y2 + 16, label, 10, col, anchor="middle",
                weight="600")
-    band(0, first - 1, "fill", ORANGE, ORANGE_L)
+    if first > 0:
+        band(0, first - 1, "fill", ORANGE, ORANGE_L)
     if fill_end >= first:
         band(first, fill_end, "ramp", BLUE, BLUE_L)
     if last > fill_end:

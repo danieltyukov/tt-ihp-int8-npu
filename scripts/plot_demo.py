@@ -36,6 +36,7 @@ C_F32 = "#7aa6c2"
 C_I8 = "#2f6f9f"
 C_ERR = "#c26b3f"
 C_GRID = "#d8dee3"
+MUTED_ANN = "#5c6672"
 C_TEXT = "#22282d"
 
 
@@ -127,9 +128,9 @@ def plot_histograms(z, res) -> None:
     q = res["quantization"]
     fig, axes = plt.subplots(2, 3, figsize=(13.5, 6.4))
     sets = [
-        ("network input", z["q_xte"].astype(float) * q["input_scale"],
+        ("input", z["q_xte"].astype(float) * q["input_scale"],
          z["q_xte"].astype(float), q["input_scale"], q["input_zero_point"]),
-        ("hidden layer after ReLU", z["hidden_f"], z["q_h_ref"].astype(float),
+        ("hidden after ReLU", z["hidden_f"], z["q_h_ref"].astype(float),
          q["hidden_scale"], q["hidden_zero_point"]),
         ("output logits", z["logits_f"], z["q_o_ref"].astype(float),
          q["output_scale"], q["output_zero_point"]),
@@ -139,9 +140,11 @@ def plot_histograms(z, res) -> None:
         style(axes[0][j], f"{name}: float32 values", "value",
               "count" if j == 0 else "")
         axes[1][j].hist(np.asarray(quant).ravel(), bins=60, color=C_I8)
-        style(axes[1][j], f"{name}: INT8 codes "
-                          f"(scale {scale:.3g}, zero point {zp})",
-              "INT8 code", "count" if j == 0 else "")
+        style(axes[1][j], f"{name}: INT8", "INT8 code",
+              "count" if j == 0 else "")
+        axes[1][j].annotate(f"scale {scale:.3g}, zero point {zp}",
+                            (0.02, 0.93), xycoords="axes fraction",
+                            fontsize=8.5, color=MUTED_ANN)
         axes[1][j].set_xlim(-132, 132)
     fig.suptitle("Activation distributions before and after quantization",
                  fontsize=11.5, color=C_TEXT, x=0.012, ha="left")

@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# cocotb / simulation
+test/sim_build/
+sim_build/
+build/
+*.vcd
+*.fst
+*.fst.hier
+results.xml
+test/results.xml
+test/gate_level_netlist.v
+
+# Tiny Tapeout / hardening
+runs/
+tt_submission/
+src/user_config.json
+src/config_merged.json
+
+# Vendored PDK liberty (fetch with `make pdk`, see docs/ADAPTING.md)
+pdk/*.lib
+
+# Editors
+.DS_Store
+.idea

@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1785003585" />
-    <testcase name="test_mlp_end_to_end" classname="test_demo" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_demo.py" lineno="73" time="1206.2047324180603" sim_time_ns="291920.0" ratio_time="242.01529985278071" />
+    <property name="random_seed" value="1785020304" />
+    <testcase name="test_mlp_end_to_end" classname="test_demo" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_demo.py" lineno="73" time="986.5282125473022" sim_time_ns="291920.0" ratio_time="295.90638796455397" />
   </testsuite>
 </testsuites>

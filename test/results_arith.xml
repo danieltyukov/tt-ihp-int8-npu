@@ -1,9 +1,9 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1785006110" />
-    <testcase name="test_multiplier_sweep" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="90" time="196.3877341747284" sim_time_ns="8192.0" ratio_time="41.71339943619638" />
-    <testcase name="test_multiplier_int8_min" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="115" time="4.302000284194946" sim_time_ns="102.0" ratio_time="23.70990080468759" />
-    <testcase name="test_adder_directed" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="128" time="18.235841274261475" sim_time_ns="20.0" ratio_time="1.0967412854283012" />
-    <testcase name="test_adder_random" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="145" time="530.7158892154694" sim_time_ns="600.0" ratio_time="1.130548401117121" />
+    <property name="random_seed" value="1785019265" />
+    <testcase name="test_multiplier_sweep" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="90" time="246.76286125183105" sim_time_ns="8192.0" ratio_time="33.19786437246627" />
+    <testcase name="test_multiplier_int8_min" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="115" time="8.118743419647217" sim_time_ns="102.0" ratio_time="12.563520575507017" />
+    <testcase name="test_adder_directed" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="128" time="33.32605481147766" sim_time_ns="20.0" ratio_time="0.6001310420071655" />
+    <testcase name="test_adder_random" classname="test_arith" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_arith.py" lineno="145" time="692.9595754146576" sim_time_ns="600.0" ratio_time="0.865851373279557" />
   </testsuite>
 </testsuites>

@@ -335,7 +335,21 @@ def demo_block(d) -> str:
     return "\n".join(lines)
 
 
+SUITES = ["results.xml", "results_arith.xml", "results_demo.xml",
+          "results_trace.xml"]
+
+
 def test_block() -> str:
+    # Running this while a suite is mid-run, or before one has been run at all,
+    # silently produced a table missing that suite's row and a total that was
+    # wrong by the tests it left out. A partial table is worse than no table.
+    absent = [n for n in SUITES if not (TESTS / n).is_file()]
+    if absent and len(absent) < len(SUITES):
+        raise SystemExit(
+            f"missing {', '.join(absent)} in {TESTS}: the results table would "
+            f"come out short. Run `make test-all` and `make trace`, or wait "
+            f"for the run in progress to finish.")
+
     rows = []
     total_t = total_f = 0
     # cocotb writes a flat JUnit file; counting the tags avoids pulling an XML

@@ -63,8 +63,8 @@ psum_reg <= psum_in + w_reg * a_reg
 
 There is deliberately no compute enable. When the array is idle the row inputs
 are driven to zero, so the products are zero and the partial-sum chain flushes
-itself. That removes `ROWS*COLS*(PSUM_W+8)` enable multiplexers, which at 18 um2
-each is over 6000 um2 in the shipped configuration.
+itself. That removes `ROWS*COLS*(PSUM_W+8)` enable multiplexers: 216 of them in
+the shipped configuration, about 3900 um2 at 18.14 um2 each.
 
 The one-cycle offset between `a_reg` and the product is what makes the wavefront
 line up. Take a sample that enters row 0 in cycle `s`, with row `r` fed the same
@@ -384,17 +384,18 @@ measured that way.
 ## Area budget
 
 Registers dominate. On this PDK a resettable flip-flop is 48.99 um2 and a 2:1
-multiplexer is 18.14 um2, so a flip-flop with an enable costs about the same as
-a full adder bit. The shipped configuration is 1126 flip-flops out of 11278
-cells, and the storage that exists purely to keep the array fed (activation
-buffer, accumulator bank, result registers) is 40 percent of them. That is the
+multiplexer is 18.14 um2, so a flip-flop that needs an enable costs 67 um2,
+more than a full adder bit. The shipped configuration is 1137 flip-flops out of
+8118 mapped cells, and the storage that exists purely to keep the array fed
+(192 activation-buffer bits, 288 accumulator bits, 96 result bits) is about half
+of them. That is the
 real cost of a systolic array on a tile with no SRAM, and it is why the geometry
 sweep in `docs/synth/ppa.md` shows area growing faster with `S_MAX` than
 intuition suggests.
 
 Design decisions that came out of measuring rather than guessing:
 
-- No compute enable in the PE (self-flushing array): saves about 6000 um2.
+- No compute enable in the PE (self-flushing array): saves about 3900 um2.
 - Bulk loads are plain shift chains with no address decoders. A shift chain
   needs no multiplexer at all when every element shifts, so the weight,
   activation, bias and quantization loads cost one enable per byte lane instead
@@ -403,8 +404,8 @@ Design decisions that came out of measuring rather than guessing:
   rather than a variable part-select write into one flat vector, which Yosys
   turns into a barrel-shifted write mask.
 - Asynchronous reset throughout, because the only flip-flops in sg13g2 have an
-  asynchronous reset. A synchronous reset would add a multiplexer per bit, about
-  20000 um2 across the design.
+  asynchronous reset. A synchronous reset would add a multiplexer per bit:
+  1137 of them, about 20600 um2.
 
 ## Clock target
 

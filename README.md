@@ -327,10 +327,11 @@ criterion.
 
 This is a large project by Tiny Tapeout standards, and the reason is registers
 rather than arithmetic. A resettable flip-flop in sg13g2 is 48.99 um2 and a
-2:1 multiplexer is 18.14 um2, so a flip-flop with an enable costs about as much
-as a full adder bit. Of 1137 registers, the storage that exists purely to keep
-the array fed (activation buffer, accumulator bank, result registers) is about
-40%. That is the real cost of a systolic array on a tile with no SRAM.
+2:1 multiplexer is 18.14 um2, so a flip-flop that needs an enable costs 67 um2,
+more than a full adder bit. Of the 1137 registers, 576 exist purely to keep the
+array fed: 192 bits of activation buffer, 288 bits of accumulator bank and 96
+bits of result register. That is the real cost of a systolic array on a tile with
+no SRAM, and it is why area grows faster with `S_MAX` than with the array itself.
 
 Two calibration points, measured with the same flow, for anyone weighing that
 number: the two IHP projects this one supersedes come out at 7006 um2 (a 1x1
@@ -339,11 +340,13 @@ tile, 39% density) and 65111 um2 (a 2x2 tile, 90% density, well above what the
 
 Smaller configurations, all measured, for forks that want cheaper silicon:
 
-| configuration | area | smallest tile at 60% |
-| --- | --- | --- |
-| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 142403 um2 | 8x2 |
-| `ROWS=4 COLS=2 S_MAX=5` | 132631 um2 | 8x2 (6x2 would be 61.3%) |
-| `ROWS=4 COLS=2 S_MAX=4` | 114070 um2 | 6x2 |
+| configuration | MACs/cycle | area | smallest tile at 60% |
+| --- | --- | --- | --- |
+| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 8 | 142403 um2 | 8x2, 49.3% |
+| `ROWS=4 COLS=2 S_MAX=5` | 8 | 132630 um2 | 8x2, 46.0% (6x2 would be 61.3%) |
+| `ROWS=4 COLS=2 S_MAX=4` | 8 | 114070 um2 | 6x2, 52.7% |
+| `ROWS=2 COLS=2 S_MAX=4` | 4 | 83686 um2 | 4x2, 58.0% |
+| `ROWS=2 COLS=2 S_MAX=2` | 4 | 65508 um2 | 4x2, 45.4% (3x2 would be 60.5%) |
 
 `S_MAX >= ROWS + COLS - 1` is what makes a cycle in which every PE is busy
 possible, which is why the shipped configuration keeps `S_MAX = 6`.

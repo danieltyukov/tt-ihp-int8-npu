@@ -163,7 +163,9 @@ def plot_requant_error() -> None:
     acc = np.array([p["acc"] for p in d["points"]], dtype=float)
     rtl = np.array([p["rtl"] for p in d["points"]], dtype=float)
     exact = np.array([p["exact"] for p in d["points"]], dtype=float)
-    ideal = np.clip(np.round(exact), -128, 127)
+    # Round to nearest with ties away from zero, which is what the hardware
+    # does; numpy's round would break ties to even and disagree at exact halves.
+    ideal = np.clip(np.sign(exact) * np.floor(np.abs(exact) + 0.5), -128, 127)
 
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(9.5, 6.4), sharex=True,
                                   gridspec_kw={"height_ratios": [2, 1]})
@@ -190,8 +192,11 @@ def plot_requant_error() -> None:
     fig.tight_layout()
     fig.savefig(IMG / "requant_error.png", dpi=150)
     plt.close(fig)
-    assert np.all(rtl[inside] == ideal[inside]), \
-        "RTL requantization is not the correctly rounded result"
+    bad = np.flatnonzero(rtl[inside] != ideal[inside])
+    assert bad.size == 0, (
+        "RTL requantization is not the correctly rounded result at "
+        f"acc={acc[inside][bad][:5].tolist()}: rtl {rtl[inside][bad][:5].tolist()} "
+        f"expected {ideal[inside][bad][:5].tolist()}")
     print(f"requantization error plot: {len(acc)} RTL points, "
           f"max error inside range {np.abs(err[inside]).max():.4f} LSB")
 

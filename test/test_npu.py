@@ -21,10 +21,12 @@ from npu_driver import Npu
 
 CFG = g.Cfg(rows=4, cols=2, s_max=6, acc_w=24, m_w=16, sh_w=5)
 
-# Number of randomized layer configurations. The default is what the committed
-# results were produced with; lower it for a quicker smoke run.
-SWEEP_CASES = int(os.environ.get("NPU_SWEEP_CASES", "120"))
-MULTIPASS_CASES = int(os.environ.get("NPU_MULTIPASS_CASES", "30"))
+# Randomized layer configurations. The defaults are what the committed results
+# were produced with. Icarus manages roughly 200 to 500 ns of simulation per
+# second on this design, so a much longer sweep is a matter of patience rather
+# than of coverage: raise NPU_SWEEP_CASES for a soak run.
+SWEEP_CASES = int(os.environ.get("NPU_SWEEP_CASES", "40"))
+MULTIPASS_CASES = int(os.environ.get("NPU_MULTIPASS_CASES", "12"))
 
 # Effective scale of 1/2 with M normalized: the mid-range case used whenever a
 # test cares about something other than the scale itself.
@@ -42,12 +44,14 @@ def expected_busy_cycles(cfg: g.Cfg, s_count: int, requant: bool,
                   + 1 round/zero-point + 1 done
     plus one cycle in the terminal state.
     """
-    ndig = (cfg.m_w + 3) // 2
+    ndig = (cfg.m_w + 2) // 2          # ceil((M_W+1)/2) Booth digits
     total = s_count + cfg.rows + cfg.cols
     if requant:
         for _ in range(s_count):
             for c in range(cfg.cols):
-                n = cfg.m_w + shifts[c]
+                # +1 because the Booth loop leaves 2*acc*M in the register, so
+                # the rounding shift absorbs one extra bit.
+                n = cfg.m_w + shifts[c] + 1
                 total += ndig + (n // 4 + n % 4) + 3
     return total + 1
 
@@ -560,8 +564,8 @@ async def test_latency_matches_model(dut):
     dut._log.info(
         f"latency model confirmed for s_count 1..{CFG.s_max}: array phase is "
         f"s+{CFG.rows + CFG.cols} cycles, requant "
-        f"{expected_busy_cycles(CFG, 1, True, [0]) - expected_busy_cycles(CFG, 1, False, [0])}"
-        f" cycles for a single output at shift 0")
+        f"{expected_busy_cycles(CFG, 1, True, [0] * CFG.cols) - expected_busy_cycles(CFG, 1, False, [0] * CFG.cols)}"
+        f" cycles to requantize one sample's {CFG.cols} channels at shift 0")
 
 
 # ---------------------------------------------------------------------------

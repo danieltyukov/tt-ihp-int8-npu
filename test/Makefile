@@ -44,6 +44,11 @@ TOPLEVEL = tb
 
 COCOTB_TEST_MODULES = test_npu
 
+# NODUMP=1 skips the waveform dump, which is several times faster on this design.
+ifeq ($(NODUMP),1)
+COCOTB_PLUSARGS += +nodump
+endif
+
 include $(shell cocotb-config --makefiles)/Makefile.sim
 
 # Arithmetic-variant equivalence runs against its own testbench, which brings up

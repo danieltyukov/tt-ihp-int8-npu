@@ -25,6 +25,9 @@ M_HALF = 1 << (CFG.m_w - 1)
 OUT = Path(__file__).resolve().parent.parent / "docs" / "data"
 
 
+points_out: list[dict] = []
+
+
 def write(name: str, payload: dict) -> Path:
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / name
@@ -104,55 +107,49 @@ def to_signed(v: int, width: int) -> int:
 async def test_capture_requant_sweep(dut):
     """RTL requantizer output against the exact real-valued product.
 
-    A single weight of 1 in row 0 puts the activation straight into the
-    accumulator, and the bias walks the accumulator across the range that maps
-    to the whole INT8 output range, so each run yields s_count*COLS points.
+    The accumulator is swept with the per-channel bias, which is the only 24-bit
+    input the host can set directly: activations and weights are INT8, so they
+    cannot reach the range that maps to the whole INT8 output range. Weights are
+    zero, so acc[c] is exactly bias[c] and each run yields COLS points.
     """
     npu = Npu(dut, CFG)
     await npu.start_clock()
     await npu.reset()
     model = g.Model(CFG)
 
-    mult = [M_HALF, M_HALF]
-    shift = [7, 7]
-    scale = g.effective_scale(mult[0], shift[0], CFG)   # 1/256
-    weights = [[1, 1], [0, 0], [0, 0], [0, 0]]
+    mult = [M_HALF] * CFG.cols
+    shift = [7] * CFG.cols
+    scale = g.effective_scale(mult[0], shift[0], CFG)   # exactly 1/256
+    weights = [[0] * CFG.cols for _ in range(CFG.rows)]
+    acts = [[0] * CFG.rows]
 
-    points = []
-    # The INT8 output range covers acc in [-128/scale, 127/scale].
-    lo, hi = int(-140 / scale), int(140 / scale)
-    step = (hi - lo) // 40
-    for base in range(lo, hi, step * CFG.s_max):
-        acts = []
-        biases = []
-        for s in range(CFG.s_max):
-            acts.append([0, 0, 0, 0])
-        for c in range(CFG.cols):
-            biases.append(base + c * step // 2)
-        # Sweep the activation as the fine step within each run.
-        for s in range(CFG.s_max):
-            acts[s] = [s * (step // CFG.s_max), 0, 0, 0]
+    # Cover a little past both INT8 rails so the saturation knees are visible.
+    lo, hi = int(-150 / scale), int(150 / scale)
+    points = 96
+    spacing = (hi - lo) // points
+
+    for i in range(points // CFG.cols):
+        biases = [lo + (i * CFG.cols + c) * spacing for c in range(CFG.cols)]
         model.reset()
         await npu.load_all(model, weights, acts, biases, mult, shift,
-                           s_count=CFG.s_max, zp=0)
+                           s_count=1, zp=0)
         await npu.run()
-        model.run(weights, acts, biases, mult, shift, s_count=CFG.s_max,
-                  accumulate=False, requant=True)
-        hw = await npu.read_results(CFG.s_max * CFG.cols)
-        assert hw == model.result[:CFG.s_max * CFG.cols], \
-            f"requant sweep mismatch at base {base}: {hw}"
-        for s in range(CFG.s_max):
-            for c in range(CFG.cols):
-                acc = model.acc[c][s]
-                points.append({"acc": acc, "rtl": hw[s * CFG.cols + c],
-                               "exact": acc * scale})
+        model.run(weights, acts, biases, mult, shift, s_count=1,
+                  accumulate=False, requant=True, zp=0)
+        hw = await npu.read_results(CFG.cols)
+        assert hw == model.result[:CFG.cols], \
+            f"requant sweep mismatch at bias {biases}: hw {hw} " \
+            f"model {model.result[:CFG.cols]}"
+        for c in range(CFG.cols):
+            acc = model.acc[c][0]
+            points_out.append({"acc": acc, "rtl": hw[c], "exact": acc * scale})
 
-    points.sort(key=lambda p: p["acc"])
+    points_out.sort(key=lambda p: p["acc"])
     path = write("requant_sweep.json", {
         "m": mult[0], "shift": shift[0], "scale": scale, "m_w": CFG.m_w,
-        "points": points,
+        "points": points_out,
     })
-    dut._log.info(f"captured {len(points)} requantization points to {path}")
+    dut._log.info(f"captured {len(points_out)} requantization points to {path}")
 
 
 @cocotb.test()

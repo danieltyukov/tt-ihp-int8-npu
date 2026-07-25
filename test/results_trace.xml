@@ -1,0 +1,8 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1785003410" />
+    <testcase name="test_capture_dataflow" classname="test_trace" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_trace.py" lineno="38" time="20.346509218215942" sim_time_ns="5840.0" ratio_time="287.02712280352887" />
+    <testcase name="test_capture_requant_sweep" classname="test_trace" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_trace.py" lineno="106" time="90.85628151893616" sim_time_ns="100900.0" ratio_time="1110.5451193153942" />
+    <testcase name="test_capture_protocol" classname="test_trace" file="/home/danieltyukov/workspace/personal/tt-ihp-int8-npu/test/test_trace.py" lineno="155" time="2.478492021560669" sim_time_ns="2130.0" ratio_time="859.3935269796718" />
+  </testsuite>
+</testsuites>

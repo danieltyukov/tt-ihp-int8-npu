@@ -9,9 +9,14 @@
 
 module tb ();
 
+  // Dumping every signal of an 8000-cell design on every cycle costs more than
+  // the simulation itself, so it is opt-out: run with +nodump (the Makefile's
+  // NODUMP=1) when you only care about the assertions.
   initial begin
-    $dumpfile("tb.fst");
-    $dumpvars(0, tb);
+    if (!$test$plusargs("nodump")) begin
+      $dumpfile("tb.fst");
+      $dumpvars(0, tb);
+    end
     #1;
   end
 

@@ -1,0 +1,301 @@
+{
+ "samples": [
+  {
+   "cycle": 0,
+   "label": "idle",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 1,
+   "label": "LD_W",
+   "ui_in": 32,
+   "wr": 1,
+   "is_cmd": 1,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 2,
+   "label": "W0",
+   "ui_in": 3,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 3,
+   "label": "W1",
+   "ui_in": 253,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 4,
+   "label": "W2",
+   "ui_in": 2,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 5,
+   "label": "W3",
+   "ui_in": 254,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 6,
+   "label": "W4",
+   "ui_in": 1,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 7,
+   "label": "W5",
+   "ui_in": 255,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 8,
+   "label": "W6",
+   "ui_in": 4,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 9,
+   "label": "W7",
+   "ui_in": 252,
+   "wr": 1,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 10,
+   "label": "RUN",
+   "ui_in": 114,
+   "wr": 1,
+   "is_cmd": 1,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 0,
+   "done": 0
+  },
+  {
+   "cycle": 11,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 12,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 13,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 14,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 15,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 16,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 17,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 18,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 19,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 20,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 21,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 22,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 23,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 24,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 25,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  },
+  {
+   "cycle": 26,
+   "label": "compute",
+   "ui_in": 0,
+   "wr": 0,
+   "is_cmd": 0,
+   "rd": 0,
+   "uo_out": 0,
+   "busy": 1,
+   "done": 0
+  }
+ ]
+}

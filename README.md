@@ -399,6 +399,18 @@ the requantized INT8 activations of layer 1 fed back in as the input to layer 2.
 | hidden quantization | scale 0.0315701, zero point -128 |
 | output quantization | scale 0.468215, zero point 0 |
 
+The RTL run: **18 images through the accelerator, 396 INT8 layer outputs (both
+layers) bit-exact against the NumPy INT8 reference**, and predictions identical to
+it. Those 18 images are 14 correct; the accuracy figures above are the reference
+model over the whole 359-image test set, which the RTL matches bit for bit on the
+subset it ran. `NPU_DEMO_IMAGES=359 make demo` runs all of them, at roughly a
+minute of simulation per image.
+
+Each layer is tiled the way a host would do it: layer 1 is 6 channel groups of 4
+accumulating passes each, layer 2 is 5 groups of 3 passes, and layer 1's
+requantized INT8 output is read back and fed in as layer 2's input, with its
+zero point at -128 folded into layer 2's bias.
+
 ![confusion](docs/img/demo_confusion.png)
 
 ![per class](docs/img/demo_per_class.png)
@@ -417,8 +429,45 @@ Nothing in the suite is a smoke test. Every result is compared against
 written from the datasheet, in plain Python integers so overflow behaviour is
 never in doubt.
 
+Coverage worth calling out:
+
+- **Randomized golden-model sweep**: 40 randomized layer configurations (random
+  weights, activations, biases, multipliers, shifts, zero points, activation
+  modes and clamp windows), checking all 310 INT8 outputs and all 310 raw
+  accumulators bit-exactly.
+- **Multi-pass reduction**: 12 layers over 32 accumulating passes, up to 16
+  inputs on a 4-row array.
+- **`-128` everywhere**: the asymmetric INT8 minimum in weights and activations,
+  including `-128 * -128 = 16384`, which needs the full 16-bit product.
+- **Both saturation rails**, accumulator overflow in both directions, and that
+  the sticky flags latch and clear.
+- **Rounding exactly at the `.5` boundary**, both signs, plus a cross-check of
+  the two formulations of the rounding rule over 8192 values.
+- **Zero and maximum scales**: `M = 0`, `M = 2^16-1`, maximum shift, `M = 1`,
+  crossed with zero points at both INT8 rails.
+- **Arithmetic-variant equivalence**: every adder and multiplier architecture
+  bit-identical to every other. The cocotb sweep covers 4096 signed 8x8 operand
+  pairs across eight variants; `make arith` covers all 65536 exhaustively.
+- **Sustained throughput** measured on the PE registers themselves, not inferred
+  from a cycle count: every PE performs exactly 6 MACs with no gaps and all 8 are
+  simultaneously busy for 2 cycles.
+- **Protocol**: unknown opcodes, payload overrun, abandoned frames, writes while
+  busy, and that the interface resynchronizes afterwards.
+- **Reset**: outputs defined and deterministic after reset, and mid-run reset
+  returning to a known state.
+
+Results from the last full run:
+
 <!--TEST_RESULTS-->
-_Run `make test-all` to populate this table._
+| results file | tests | passed | failed |
+| --- | --- | --- | --- |
+| `results.xml` | 21 | 21 | 0 |
+| `results_arith.xml` | 4 | 4 | 0 |
+| `results_demo.xml` | 1 | 1 | 0 |
+| `results_trace.xml` | 3 | 3 | 0 |
+| **total** | 29 | 29 | 0 |
+
+Produced by `make test-all` on this machine with Icarus Verilog 12.0 and cocotb 2.0.1.
 
 ## Simulating and testing
 
@@ -432,10 +481,15 @@ make ppa         # full PPA comparison, writes docs/synth/ppa.md
 make images      # regenerate every figure from measured data
 ```
 
-The accelerator suite is slow under Icarus because the requantizer is serial and
-the sweep is large; `NPU_SWEEP_CASES=20 make test` is the quick version. cocotb
-2.0.1 needs Verilator 5.036 or newer to use it as a backend, and 5.020 is what is
-installed here, so Icarus is the default.
+Measured runtimes on this machine (Icarus 12.0, roughly 250 to 500 ns of
+simulation per second on this design): the accelerator suite is about 25 minutes,
+the arithmetic suite a few minutes, the end-to-end demo about 20 minutes, and the
+standalone `make arith` bench about two. `NODUMP=1` skips the waveform dump and
+is what those numbers were taken with. `NPU_SWEEP_CASES`, `NPU_MULTIPASS_CASES`,
+`NPU_ARITH_STRIDE` and `NPU_DEMO_IMAGES` scale the four long loops up or down.
+
+cocotb 2.0.1 needs Verilator 5.036 or newer to use it as a backend and 5.020 is
+what is installed here, so Icarus is the default.
 
 Area numbers need the IHP standard-cell liberty, which is not vendored:
 

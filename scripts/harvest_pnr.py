@@ -85,8 +85,10 @@ def main() -> int:
                     help="LibreLane run directory, the one holding final/")
     ap.add_argument("--run-id", default=None,
                     help="GitHub Actions run id this came from")
-    ap.add_argument("--commit", default=None,
-                    help="commit sha this came from")
+    # Deliberately not a commit sha: the run id pins the exact tree GitHub
+    # hardened and survives a history rewrite, a sha does not.
+    ap.add_argument("--branch", default=None,
+                    help="branch the run was triggered from")
     ap.add_argument("--out-dir", type=Path, default=OUT,
                     help="where to write, default docs/pnr. Use a subdirectory "
                          "for a run that is not the shipped configuration.")
@@ -106,7 +108,7 @@ def main() -> int:
     placement["provenance"] = {
         "label": args.label,
         "github_run_id": args.run_id,
-        "commit": args.commit,
+        "branch": args.branch,
         "flow": f"{pdk.get('FLOW_NAME')} {pdk.get('FLOW_VERSION')}",
         "pdk": pdk.get("PDK"),
         "pdk_version": pdk.get("PDK_VERSION"),

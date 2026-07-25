@@ -42,7 +42,7 @@
   "provenance": {
     "label": "4x2 alternative",
     "github_run_id": "30175822268",
-    "commit": "a640fbf",
+    "branch": "experiment/tile-4x2",
     "flow": "LibreLane 3.0.0.dev44",
     "pdk": "ihp-sg13g2",
     "pdk_version": "cb7daaa8901016cf7c5d272dfa322c41f024931f"

@@ -42,7 +42,7 @@
   "provenance": {
     "label": "shipped, 6x2",
     "github_run_id": "30173902710",
-    "commit": "1314d4c",
+    "branch": "experiment/tile-6x2",
     "flow": "LibreLane 3.0.0.dev44",
     "pdk": "ihp-sg13g2",
     "pdk_version": "cb7daaa8901016cf7c5d272dfa322c41f024931f"

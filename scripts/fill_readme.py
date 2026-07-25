@@ -275,13 +275,16 @@ def formal_block() -> str:
     return (
         f"`scripts/run_formal.py` proves each arithmetic variant equal to its "
         f"behavioral reference: `a + b + cin` for adders, `a * b` for "
-        f"multipliers. Engine: {d['engine']}. A pass is therefore a "
-        f"correctness proof over the whole input space, not an agreement check "
-        f"between two implementations, and it is what makes the area and depth "
-        f"differences in the PPA tables the only differences.\n\n"
-        f"**{d['passed']} of {d['proofs']} proofs pass**, "
-        f"{d['wall_seconds']:.0f}s of wall time. Full table in "
-        f"[docs/formal/summary.md](docs/formal/summary.md).\n\n"
+        f"multipliers. Engine: {d['engine']}. Both miters are combinational "
+        f"and hold no state, so depth 1 reaches every input: a pass is a "
+        f"correctness proof against the reference expression over the whole "
+        f"input space, not an agreement check between two implementations, and "
+        f"it is what makes the area and depth differences in the PPA tables "
+        f"the only differences between the instances proved.\n\n"
+        f"**{d['passed']} of {d['proofs']} proofs pass.** The `formal` workflow "
+        f"reruns them on every push and fails if "
+        f"[docs/formal/summary.md](docs/formal/summary.md) no longer matches, "
+        f"so this is a checked result rather than a committed one.\n\n"
         + table(["what is proved", "variants", "inputs per proof", "result"], [
             ["`npu_adder` equals `a + b + cin`",
              "5 architectures x 19, 25, 26 and 42 bits",
@@ -293,7 +296,20 @@ def formal_block() -> str:
              "all 65536 signed 8x8 pairs",
              f"{sum(r['status'] == 'pass' for r in d['results'] if r['kind'] == 'mult')}"
              f"/{sum(r['kind'] == 'mult' for r in d['results'])} pass"],
-        ]))
+        ])
+        + f"\n\nWhat is not proved matters as much as what is. The miters "
+        f"instantiate `npu_adder` and `npu_mult` and nothing else, so the "
+        f"proofs say nothing about the sequential design: `npu_pe`, "
+        f"`npu_array`, `npu_requant`, `npu_activation`, `npu_host_if` and "
+        f"`npu_core` have no proof, and reset behaviour, the accumulator bank, "
+        f"the requantization pipeline and the host protocol are covered by the "
+        f"cocotb suite against `test/golden.py` instead. Each proof also fixes "
+        f"its parameters, so what holds is {d['proofs']} instances rather than "
+        f"the generators at arbitrary parameters: the adders at 19, 25, 26 and "
+        f"42 bits, which are the widths `npu_core` instantiates, and the "
+        f"multipliers at `A_W = B_W = 8`. Nothing here is proved about the "
+        f"synthesized netlist either. The proofs run on the RTL; the "
+        f"gate-level netlist is checked by `gl_test` and by LVS.")
 
 
 def demo_block(d) -> str:

@@ -3,6 +3,7 @@
 [![test](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/test.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/test.yaml)
 [![gds](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/gds.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/gds.yaml)
 [![docs](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/docs.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/docs.yaml)
+[![formal](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/formal.yaml/badge.svg)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/workflows/formal.yaml)
 
 A signed INT8 neural-network inference accelerator for the
 [Tiny Tapeout](https://tinytapeout.com) IHP 130 nm open-source PDK shuttle: a
@@ -381,16 +382,16 @@ number: the two IHP projects this one supersedes synthesize to 7006 um2 (22.4%
 of a 1x1 tile) and 65111 um2 (49.5% of a 2x2 tile).
 
 Smaller configurations, all measured, for forks that want cheaper silicon. The
-routed column scales the synthesis area by the 1.33 factor measured on the
-shipped configuration, which is an extrapolation from one hardened point:
+routed column scales the synthesis area by the same 1.34 factor as the table
+above, which is an extrapolation from one hardened point:
 
-| configuration | MACs/cycle | synth area | tile at 60%, synth | tile at 60%, x1.33 |
+| configuration | MACs/cycle | synth area | tile at 60%, synth | tile at 60%, x1.34 |
 | --- | --- | --- | --- | --- |
-| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 8 | 142403 um2 | 4x2, 53.1% | 6x2, 46.9% |
-| `ROWS=4 COLS=2 S_MAX=5` | 8 | 132630 um2 | 4x2, 49.5% | 6x2, 43.7% |
-| `ROWS=4 COLS=2 S_MAX=4` | 8 | 114070 um2 | 3x2, 57.1% | 4x2, 56.7% |
-| `ROWS=2 COLS=2 S_MAX=4` | 4 | 83686 um2 | 3x2, 41.9% | 3x2, 55.8% |
-| `ROWS=2 COLS=2 S_MAX=2` | 4 | 65508 um2 | 2x2, 49.8% | 3x2, 43.7% |
+| `ROWS=4 COLS=2 S_MAX=6` (shipped) | 8 | 142403 um2 | 4x2, 53.1% | 6x2, 47.1% |
+| `ROWS=4 COLS=2 S_MAX=5` | 8 | 132631 um2 | 4x2, 49.5% | 6x2, 43.9% |
+| `ROWS=4 COLS=2 S_MAX=4` | 8 | 114070 um2 | 3x2, 57.1% | 4x2, 56.9% |
+| `ROWS=2 COLS=2 S_MAX=4` | 4 | 83687 um2 | 3x2, 41.9% | 3x2, 56.0% |
+| `ROWS=2 COLS=2 S_MAX=2` | 4 | 65508 um2 | 2x2, 49.8% | 3x2, 43.9% |
 
 `S_MAX >= ROWS + COLS - 1` is what makes a cycle in which every PE is busy
 possible, which is why the shipped configuration keeps `S_MAX = 6`.
@@ -690,11 +691,16 @@ docs/
 | `gds` | `gl_test` | passing | the accelerator suite replayed on the gate-level netlist |
 | `gds` | `viewer` | passing | publishes the OASIS to GitHub Pages for the 3D viewer |
 | `docs` | `docs` | passing | builds the datasheet page from `docs/info.md` and `info.yaml` |
-| `fpga` | `fpga` | not run | `branches: none` in the template, an ICE40UP5K bitstream for the TT ASIC simulator |
+| `formal` | `formal` | passing | reruns all 35 SymbiYosys proofs and fails if `docs/formal/summary.md` no longer matches |
+| `fpga` | `fpga` | not run | `branches: none` in the template, an ICE40UP5K bitstream for the TT ASIC simulator. Yosys `synth_ice40` maps this design on its own to 4327 of the UP5K's 5280 LUT4s, before the Tiny Tapeout harness, so it is left off |
 
 All four `gds` jobs are self-contained: no secrets, no Tiny Tapeout API, nothing
 that only works inside the organisation, so a fork gets the same results. The
 badges above are the real state of `main`.
+
+The `formal` job takes its Yosys and z3 from the ubuntu-24.04 archive and
+SymbiYosys from a pinned commit, and proves all 35 miters in about five minutes
+with four solvers running at once.
 
 `make ppa` is not in CI: it needs the IHP standard-cell liberty, which is a
 large download the workflows do not pull. Its output is committed instead,

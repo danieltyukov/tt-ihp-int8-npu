@@ -31,7 +31,7 @@ project:
   # which is 49.3% of the 8x2 die area. A 6x2 tile would be 65.8%, above the
   # 60% placement target in src/config.json. README.md has the full
   # justification and the measured alternatives.
-  tiles: "6x2"
+  tiles: "4x2"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

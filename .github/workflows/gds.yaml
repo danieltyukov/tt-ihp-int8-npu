@@ -7,6 +7,15 @@ on:
 jobs:
   gds:
     runs-on: ubuntu-24.04
+    # LibreLane leaves these unset, which means single-threaded KLayout. The
+    # Tiny Tapeout config disables both KLayout stages (RUN_KLAYOUT_DRC and
+    # RUN_KLAYOUT_XOR are 0 in src/config.json), so on this flow they cost
+    # nothing, but a runner has 4 cores and a design this size takes long
+    # enough in DRC to dominate the job if the stages are ever turned back on.
+    # scripts/harden.py computes the same defaults for local runs.
+    env:
+      KLAYOUT_DRC_THREADS: 4
+      KLAYOUT_XOR_THREADS: 4
     steps:
       - name: checkout repo
         uses: actions/checkout@v6

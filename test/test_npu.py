@@ -28,6 +28,12 @@ CFG = g.Cfg(rows=4, cols=2, s_max=6, acc_w=24, m_w=16, sh_w=5)
 SWEEP_CASES = int(os.environ.get("NPU_SWEEP_CASES", "40"))
 MULTIPASS_CASES = int(os.environ.get("NPU_MULTIPASS_CASES", "12"))
 
+# The gate-level netlist is a single flat module: the PE-level hierarchy that
+# test_sustained_throughput walks does not survive synthesis. That one
+# white-box probe is therefore RTL-only, and its functional half still runs
+# against the netlist. Every other test drives the design through its pins.
+GATE_LEVEL = os.environ.get("GATES") == "yes"
+
 # Effective scale of 1/2 with M normalized: the mid-range case used whenever a
 # test cares about something other than the scale itself.
 M_HALF = 1 << (CFG.m_w - 1)
@@ -472,6 +478,9 @@ async def test_sustained_throughput(dut):
     cycle r + c + 1 of the array phase, which is one MAC per PE per cycle with
     no gaps. The array is fully populated (all ROWS*COLS PEs at once) for
     s_count - ROWS - COLS + 2 cycles.
+
+    The per-PE probe needs the module hierarchy, so against the hardened
+    netlist (GATES=yes) only the layer result is checked.
     """
     npu = await setup(dut)
     model = g.Model(CFG)
@@ -486,47 +495,54 @@ async def test_sustained_throughput(dut):
                        [0] * cols, s_count=s_count)
 
     pes = []
-    array = dut.user_project.u_core.u_array
-    for r in range(rows):
-        for c in range(cols):
-            pes.append((r, c, array.g_row[r].g_col[c].u_pe))
+    if not GATE_LEVEL:
+        array = dut.user_project.u_core.u_array
+        for r in range(rows):
+            for c in range(cols):
+                pes.append((r, c, array.g_row[r].g_col[c].u_pe))
 
     await npu.cmd(g.OP_RUN, 0b10)
-    active = {}   # (r,c) -> list of cycles where the PE held a live activation
-    busy_seen = False
-    for cycle in range(s_count + rows + cols + 40):
-        await FallingEdge(dut.clk)
-        if npu.busy:
-            busy_seen = True
-        elif busy_seen:
-            break
-        for r, c, pe in pes:
-            if int(pe.a_reg.value) != 0:
-                active.setdefault((r, c), []).append(cycle)
+    if pes:
+        active = {}   # (r,c) -> cycles where the PE held a live activation
+        busy_seen = False
+        for cycle in range(s_count + rows + cols + 40):
+            await FallingEdge(dut.clk)
+            if npu.busy:
+                busy_seen = True
+            elif busy_seen:
+                break
+            for r, c, pe in pes:
+                if int(pe.a_reg.value) != 0:
+                    active.setdefault((r, c), []).append(cycle)
 
-    for r, c, _ in pes:
-        cycles = active.get((r, c), [])
-        assert len(cycles) == s_count, (
-            f"PE({r},{c}) held a live activation for {len(cycles)} cycles, "
-            f"expected {s_count} (one MAC per cycle)")
-        assert cycles == list(range(cycles[0], cycles[0] + s_count)), (
-            f"PE({r},{c}) stalled: active cycles {cycles}")
+        for r, c, _ in pes:
+            cycles = active.get((r, c), [])
+            assert len(cycles) == s_count, (
+                f"PE({r},{c}) held a live activation for {len(cycles)} cycles, "
+                f"expected {s_count} (one MAC per cycle)")
+            assert cycles == list(range(cycles[0], cycles[0] + s_count)), (
+                f"PE({r},{c}) stalled: active cycles {cycles}")
 
-    base = min(active[(0, 0)])
-    for r, c, _ in pes:
-        assert min(active[(r, c)]) == base + r + c, (
-            f"PE({r},{c}) started at {min(active[(r, c)])}, expected "
-            f"{base + r + c} for a diagonal wavefront")
+        base = min(active[(0, 0)])
+        for r, c, _ in pes:
+            assert min(active[(r, c)]) == base + r + c, (
+                f"PE({r},{c}) started at {min(active[(r, c)])}, expected "
+                f"{base + r + c} for a diagonal wavefront")
 
-    full = [t for t in range(base, base + s_count + rows + cols)
-            if all(t in active[(r, c)] for r, c, _ in pes)]
-    expected_full = max(0, s_count - rows - cols + 2)
-    assert len(full) == expected_full, (
-        f"array fully populated for {len(full)} cycles, expected {expected_full}")
-    macs = s_count * rows * cols
-    dut._log.info(
-        f"sustained throughput: {len(pes)} PEs x {s_count} cycles = {macs} MACs, "
-        f"all {len(pes)} PEs simultaneously active for {len(full)} cycles")
+        full = [t for t in range(base, base + s_count + rows + cols)
+                if all(t in active[(r, c)] for r, c, _ in pes)]
+        expected_full = max(0, s_count - rows - cols + 2)
+        assert len(full) == expected_full, (
+            f"array fully populated for {len(full)} cycles, expected "
+            f"{expected_full}")
+        macs = s_count * rows * cols
+        dut._log.info(
+            f"sustained throughput: {len(pes)} PEs x {s_count} cycles = "
+            f"{macs} MACs, all {len(pes)} PEs simultaneously active for "
+            f"{len(full)} cycles")
+    else:
+        dut._log.info("hardened netlist is flat, per-PE probe skipped; "
+                      "checking the layer result only")
 
     await npu.wait_done()
     hw = await npu.read_results(s_count * cols)

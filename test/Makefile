@@ -32,6 +32,10 @@ COMPILE_ARGS += -DFUNCTIONAL
 COMPILE_ARGS += -DSIM
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+# Some IHP-Open-PDK checkouts keep the UDP primitives (ihp_dff_r, ihp_mux2,
+# ihp_mux4) in a separate sg13g2_udp.v instead of inlining them in
+# sg13g2_stdcell.v. Point GL_EXTRA_SOURCES at that file on those checkouts.
+VERILOG_SOURCES += $(GL_EXTRA_SOURCES)
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 

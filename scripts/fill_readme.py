@@ -216,17 +216,18 @@ def pnr_block() -> str:
 
 def tile_runs_block() -> str:
     """Every tile size this RTL has actually been hardened at, side by side."""
-    runs = [(PNR.parent, "shipped")]
-    runs += [(d, None) for d in sorted(PNR.parent.glob("alt-*"))
+    runs = [(PNR.parent, True)]
+    runs += [(d, False) for d in PNR.parent.glob("alt-*")
              if (d / "metrics.json").is_file()]
 
-    cols, rows = [], []
-    for d, note in runs:
+    cols = []
+    for d, shipped in runs:
         m = json.loads((d / "metrics.json").read_text())
         p = json.loads((d / "placement.json").read_text())
         tile = TILE_BY_DIE.get((p["die_width_um"], p["die_height_um"]),
                                f"{p['die_width_um']}x{p['die_height_um']} um")
-        cols.append((tile + (" (shipped)" if note else ""), m, p))
+        cols.append((tile + (" (shipped)" if shipped else ""), m, p))
+    cols.sort(key=lambda c: c[1]["design__die__area"])
 
     def row(label, fn):
         return [label] + [fn(m, p) for _, m, p in cols]

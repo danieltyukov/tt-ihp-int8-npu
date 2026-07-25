@@ -32,7 +32,7 @@ Tapeout shuttle.
 | host interface | framed byte protocol, 12 opcodes, 4 readback sources, sticky error codes |
 | synthesis area | 142403 um2 of standard cells (8118 cells, 1137 registers) |
 | post-route area | 190566 um2 of standard cells in 11304 instances, 48.49% core utilization |
-| tile | 6x2, a 1289.28 x 313.74 um die of 404499 um2, picked by hardening 6x2 and 8x2 and comparing |
+| tile | 6x2, a 1289.28 x 313.74 um die of 404499 um2, picked by hardening 4x2, 6x2 and 8x2 and comparing signoff |
 | hardening | 0 Magic DRC errors, 0 Netgen LVS errors, 0 routing DRC errors, 0 antenna violations |
 | clock target | 40 MHz: +4.6 ns setup slack from OpenSTA after synthesis, +12.5 ns after routing, both at the slow corner |
 
@@ -345,13 +345,25 @@ arrives at signoff with **190566 um2** of standard cells, 1.34 times the Yosys
 figure. Against the 60% criterion that leaves 6x2, at 48.5% of the core, as the
 smallest tile the estimate allows.
 
-This project shipped on 8x2 first, chosen from a tile-area table that turned out
-to be wrong. Rather than argue the estimate, both tiles were hardened all the
-way to signoff and [measured side by side](#tiles-that-were-actually-hardened).
-6x2 wins on every axis: a die 25% smaller, more setup slack, shorter wires, the
-same zero-error signoff, and the same five routing iterations. 8x2 bought
-nothing, and its final placement said so, with no cell beyond x = 1023.4 um on a
-1724.16 um die.
+That is still an estimate. This project shipped on 8x2 first, chosen from a
+tile-area table that turned out to be wrong, so rather than argue about a better
+estimate all three candidate tiles were hardened to signoff and
+[measured side by side](#tiles-that-were-actually-hardened). All three pass:
+zero Magic DRC, zero Netgen LVS, zero routing DRC, zero antenna violations,
+positive slack at every corner, `precheck` and `gl_test` green.
+
+**6x2 ships.** It has the best setup slack of the three (+12.54 ns against
++11.90 and +11.40), the shortest routed wirelength, and it is the only one that
+stays inside the 60% placement target this project set for itself.
+
+4x2 is a legitimate choice for anyone who wants the smallest die, and it is a
+third smaller. What it costs is margin: 73.0% core utilization against a 60%
+target, an extra detailed-routing iteration, 0.64 ns less setup slack and 10 um
+more routed wire, with logic reaching 99% of the die width. Nothing in this
+design needs that third tile back, so the margin is worth more than the area.
+
+8x2 bought nothing at all. Its placement never put a cell past 59% of the die
+width, and it still finished with the worst slack of the three.
 
 This is a large project by Tiny Tapeout standards, and the reason is registers
 rather than arithmetic. A resettable flip-flop in sg13g2 is 48.99 um2 and a
@@ -449,23 +461,23 @@ fill rather than spreading out, which is why a smaller tile is not simply free.
 ### Tiles that were actually hardened
 
 <!--TILE_RUNS-->
-The same RTL, hardened at each tile size and taken all the way to signoff. Runs: [6x2 (shipped)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30173902710), [8x2](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30171991004).
+The same RTL, hardened at each tile size and taken all the way to signoff. Runs: [4x2](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30175822268), [6x2 (shipped)](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30173902710), [8x2](https://github.com/danieltyukov/tt-ihp-int8-npu/actions/runs/30171991004).
 
-|  | 6x2 (shipped) | 8x2 |
-| --- | --- | --- |
-| die | 1289.28 x 313.74 um | 1724.16 x 313.74 um |
-| die area | 404499 um2 | 540938 um2 |
-| standard cells | 190566 um2 | 189657 um2 |
-| cell instances | 11304 | 11225 |
-| core utilization | 48.49% | 36.05% |
-| logic reaches | x = 855.84 um (66% of the width) | x = 1023.36 um (59% of the width) |
-| decap and fill instances | 20085 | 31301 |
-| routed wirelength | 382408 um | 398341 um |
-| routing iterations to 0 DRC | 5 | 5 |
-| setup slack, slow corner | +12.54 ns | +11.40 ns |
-| hold slack, fast corner | +0.114 ns | +0.106 ns |
-| total power | 9.7 mW | 9.8 mW |
-| Magic DRC / Netgen LVS / route DRC / antenna | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 |
+|  | 4x2 | 6x2 (shipped) | 8x2 |
+| --- | --- | --- | --- |
+| die | 854.4 x 313.74 um | 1289.28 x 313.74 um | 1724.16 x 313.74 um |
+| die area | 268059 um2 | 404499 um2 | 540938 um2 |
+| standard cells | 189712 um2 | 190566 um2 | 189657 um2 |
+| cell instances | 11224 | 11304 | 11225 |
+| core utilization | 73.01% | 48.49% | 36.05% |
+| logic reaches | x = 847.2 um (99% of the width) | x = 855.84 um (66% of the width) | x = 1023.36 um (59% of the width) |
+| decap and fill instances | 9807 | 20085 | 31301 |
+| routed wirelength | 392467 um | 382408 um | 398341 um |
+| routing iterations to 0 DRC | 6 | 5 | 5 |
+| setup slack, slow corner | +11.90 ns | +12.54 ns | +11.40 ns |
+| hold slack, fast corner | +0.109 ns | +0.114 ns | +0.106 ns |
+| total power | 9.7 mW | 9.7 mW | 9.8 mW |
+| Magic DRC / Netgen LVS / route DRC / antenna | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 |
 
 ## Clock target
 

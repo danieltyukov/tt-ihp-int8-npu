@@ -122,9 +122,11 @@ Sizing a tile from the synthesis number alone picks a tile too small: it says
 the placement target.
 
 Treat all of that as the shortlist, not the answer. Hardening is a 45 minute CI
-job on a throwaway branch, and this project settled 6x2 against 8x2 by running
-both and comparing signoff, which is the only comparison that is not an
-extrapolation.
+job on a throwaway branch: change `tiles:` in `info.yaml`, push the branch, read
+the numbers back with `scripts/harvest_pnr.py --out-dir docs/pnr/alt-<tile>`.
+This project settled 6x2 by hardening 4x2, 6x2 and 8x2 and comparing signoff,
+which is the only comparison that is not an extrapolation. All three passed, and
+the estimate had ruled 4x2 out.
 
 To move to a smaller tile, pick a geometry from the scaling table that fits, set
 the parameters, then:

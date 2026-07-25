@@ -27,13 +27,12 @@ project:
 
   top_module:   "tt_um_danieltyukov_int8_npu"
 
-  # Chosen from a hardening run, not from synthesis area. Yosys reports 142403
-  # um2 of cells, but placement and routing add timing-repair and hold buffers
-  # and the routed design is 190566 um2, which is 48.5% of the 6x2 core and
-  # under the 60% PL_TARGET_DENSITY_PCT in src/config.json. 6x2 signs off with
-  # zero DRC, zero LVS and +12.5 ns of slow-corner setup slack. The 8x2 tile
-  # this shipped on before is also clean but 25% larger die for no gain.
-  # README.md has both measurements.
+  # Chosen from hardening runs, not from synthesis area. 4x2, 6x2 and 8x2 were
+  # all taken to signoff and all three pass. 6x2 has the best slack (+12.5 ns
+  # slow corner) and the shortest routed wire, and at 48.5% core utilization it
+  # is the only one inside the 60% PL_TARGET_DENSITY_PCT in src/config.json.
+  # 4x2 also passes and is a third smaller, at 73.0% utilization and 0.64 ns
+  # less slack. README.md has all three measurements.
   tiles: "6x2"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.

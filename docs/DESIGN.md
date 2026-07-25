@@ -400,11 +400,14 @@ run in `docs/pnr/metrics.json` ends with 11304 standard cells covering
 Yosys figure, and it is the number the tile-size criterion in README.md is
 applied to.
 
-The tile size was not settled by that criterion alone. Both 6x2 and 8x2 were
-hardened to signoff and compared, and `docs/pnr/alt-8x2/metrics.json` keeps the
-8x2 result: same RTL, 25% more die, 1.1 ns less setup slack, 16 um more routed
-wirelength, and no cell placed past 59% of the die width. The estimate says what
-to try; the run says what to ship.
+The tile size was not settled by that criterion alone. All three candidate tiles
+were hardened to signoff and compared, and `docs/pnr/alt-4x2/` and
+`docs/pnr/alt-8x2/` keep the two that did not ship. All three reach zero DRC and
+zero LVS. 8x2 costs 34% more die than 6x2 for 1.1 ns less setup slack and never
+places a cell past 59% of its width. 4x2 saves a third of the die but runs at
+73.0% core utilization against the 60% placement target, needs an extra
+detailed-routing iteration and gives up 0.64 ns of slack. The estimate says what
+to try; the runs say what to ship.
 
 Design decisions that came out of measuring rather than guessing:
 

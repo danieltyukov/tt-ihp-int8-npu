@@ -1,0 +1,50 @@
+{
+  "die_box_um": [
+    0.0,
+    0.0,
+    854.4,
+    313.74
+  ],
+  "die_width_um": 854.4,
+  "die_height_um": 313.74,
+  "instances_total": 21031,
+  "instances_fill": 9807,
+  "instances_logic": 11224,
+  "logic_x_min_um": 2.88,
+  "logic_x_max_um": 847.2,
+  "logic_y_min_um": 3.78,
+  "logic_y_max_um": 306.18,
+  "logic_width_um": 844.32,
+  "logic_x_span_fraction": 0.9882,
+  "x_histogram_bins": 20,
+  "x_histogram": [
+    601,
+    668,
+    676,
+    700,
+    669,
+    670,
+    634,
+    598,
+    657,
+    649,
+    594,
+    619,
+    572,
+    534,
+    440,
+    461,
+    379,
+    433,
+    387,
+    283
+  ],
+  "provenance": {
+    "label": "4x2 alternative",
+    "github_run_id": "30175822268",
+    "commit": "a640fbf",
+    "flow": "LibreLane 3.0.0.dev44",
+    "pdk": "ihp-sg13g2",
+    "pdk_version": "cb7daaa8901016cf7c5d272dfa322c41f024931f"
+  }
+}

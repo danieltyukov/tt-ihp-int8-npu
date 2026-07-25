@@ -174,9 +174,11 @@ depth for every variant, and for thirteen array geometries, are in
 The design hardens end to end with LibreLane on `sg13g2`: 190566 um2 of standard
 cells at 48.5% core utilization on the 6x2 tile, zero Magic DRC errors, zero
 Netgen LVS errors, zero routing DRC errors and +12.5 ns of setup slack at the
-slow corner. The tile size was settled by hardening both 6x2 and 8x2 to signoff
-and comparing, not by scaling the synthesis area. Signoff metrics for both are
-in `docs/pnr/`. That is a hardened layout, not fabricated silicon.
+slow corner. The tile size was settled by hardening 4x2, 6x2 and 8x2 to signoff
+and comparing, not by scaling the synthesis area: all three pass, and 6x2 has the
+best slack and the shortest routed wirelength of the three. Signoff metrics for
+all of them are in `docs/pnr/`. That is a hardened layout, not fabricated
+silicon.
 
 ### External hardware
 

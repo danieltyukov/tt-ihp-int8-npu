@@ -1,0 +1,62 @@
+name: formal
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  formal:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      # ubuntu-24.04 ships Yosys 0.33 and z3 4.8.12, which is the pair the
+      # committed summary was produced with. yosys-smtbmc comes from the yosys
+      # package and python3-click is one of its dependencies, so
+      # --no-install-recommends only drops xdot.
+      - name: Install Yosys and z3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends yosys z3
+          yosys -V
+          z3 --version
+
+      # Pinned rather than tracking master: SymbiYosys is the one tool here
+      # that is not packaged, and a proof flow that silently changes engine
+      # version is not a proof flow. v0.67-4-gfea6e46.
+      - name: Install SymbiYosys
+        run: |
+          git clone https://github.com/YosysHQ/sby.git /tmp/sby
+          git -C /tmp/sby checkout fea6e467d067b3ea84b6b5ac08cd48beb59f0d42
+          sudo make -C /tmp/sby install
+          sby --version
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # One solver per core. Each proof is a single-threaded z3 under a
+      # single-threaded yosys-smtbmc and peaks well under 100 MB, so the
+      # runner's four cores are the only limit.
+      - name: Prove every arithmetic variant against its reference
+        run: python scripts/run_formal.py --jobs 4
+
+      # summary.md carries no timings and no worker count precisely so that
+      # this comparison is meaningful: if a proof stopped passing, or a variant
+      # was added without regenerating the file, the run fails here.
+      - name: Check the committed summary still matches
+        run: |
+          git diff --exit-code docs/formal/summary.md \
+            || (echo "docs/formal/summary.md is stale, re-run scripts/run_formal.py" \
+                && exit 1)
+
+      - name: Upload the proof summary
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: formal-results
+          path: |
+            docs/formal/summary.json
+            docs/formal/summary.md

@@ -2,7 +2,7 @@
   "engine": "SymbiYosys bmc, smtbmc z3, depth 1",
   "proofs": 35,
   "passed": 35,
-  "wall_seconds": 488.4,
+  "wall_seconds": 691.9,
   "results": [
     {
       "kind": "adder",
@@ -15,7 +15,7 @@
       "label": "ripple-carry, 19-bit",
       "space": "2**39",
       "status": "pass",
-      "seconds": 0.4,
+      "seconds": 0.5,
       "returncode": 0
     },
     {
@@ -43,7 +43,7 @@
       "label": "Kogge-Stone, 19-bit",
       "space": "2**39",
       "status": "pass",
-      "seconds": 0.7,
+      "seconds": 1.0,
       "returncode": 0
     },
     {
@@ -57,7 +57,7 @@
       "label": "Sklansky, 19-bit",
       "space": "2**39",
       "status": "pass",
-      "seconds": 0.5,
+      "seconds": 0.8,
       "returncode": 0
     },
     {
@@ -71,7 +71,7 @@
       "label": "Han-Carlson, 19-bit",
       "space": "2**39",
       "status": "pass",
-      "seconds": 0.6,
+      "seconds": 0.8,
       "returncode": 0
     },
     {
@@ -85,7 +85,7 @@
       "label": "ripple-carry, 25-bit",
       "space": "2**51",
       "status": "pass",
-      "seconds": 0.5,
+      "seconds": 0.6,
       "returncode": 0
     },
     {
@@ -99,7 +99,7 @@
       "label": "Brent-Kung, 25-bit",
       "space": "2**51",
       "status": "pass",
-      "seconds": 0.7,
+      "seconds": 1.0,
       "returncode": 0
     },
     {
@@ -113,7 +113,7 @@
       "label": "Kogge-Stone, 25-bit",
       "space": "2**51",
       "status": "pass",
-      "seconds": 0.9,
+      "seconds": 1.1,
       "returncode": 0
     },
     {
@@ -127,7 +127,7 @@
       "label": "Sklansky, 25-bit",
       "space": "2**51",
       "status": "pass",
-      "seconds": 0.6,
+      "seconds": 0.8,
       "returncode": 0
     },
     {
@@ -141,7 +141,7 @@
       "label": "Han-Carlson, 25-bit",
       "space": "2**51",
       "status": "pass",
-      "seconds": 0.7,
+      "seconds": 0.9,
       "returncode": 0
     },
     {
@@ -155,7 +155,7 @@
       "label": "ripple-carry, 26-bit",
       "space": "2**53",
       "status": "pass",
-      "seconds": 0.5,
+      "seconds": 0.7,
       "returncode": 0
     },
     {
@@ -169,7 +169,7 @@
       "label": "Brent-Kung, 26-bit",
       "space": "2**53",
       "status": "pass",
-      "seconds": 0.6,
+      "seconds": 0.7,
       "returncode": 0
     },
     {
@@ -183,7 +183,7 @@
       "label": "Kogge-Stone, 26-bit",
       "space": "2**53",
       "status": "pass",
-      "seconds": 1.0,
+      "seconds": 1.4,
       "returncode": 0
     },
     {
@@ -197,7 +197,7 @@
       "label": "Sklansky, 26-bit",
       "space": "2**53",
       "status": "pass",
-      "seconds": 0.7,
+      "seconds": 0.9,
       "returncode": 0
     },
     {
@@ -211,7 +211,7 @@
       "label": "Han-Carlson, 26-bit",
       "space": "2**53",
       "status": "pass",
-      "seconds": 0.9,
+      "seconds": 1.2,
       "returncode": 0
     },
     {
@@ -225,7 +225,7 @@
       "label": "ripple-carry, 42-bit",
       "space": "2**85",
       "status": "pass",
-      "seconds": 0.9,
+      "seconds": 1.3,
       "returncode": 0
     },
     {
@@ -239,7 +239,7 @@
       "label": "Brent-Kung, 42-bit",
       "space": "2**85",
       "status": "pass",
-      "seconds": 0.9,
+      "seconds": 1.1,
       "returncode": 0
     },
     {
@@ -253,7 +253,7 @@
       "label": "Kogge-Stone, 42-bit",
       "space": "2**85",
       "status": "pass",
-      "seconds": 2.3,
+      "seconds": 3.1,
       "returncode": 0
     },
     {
@@ -267,7 +267,7 @@
       "label": "Sklansky, 42-bit",
       "space": "2**85",
       "status": "pass",
-      "seconds": 1.2,
+      "seconds": 1.4,
       "returncode": 0
     },
     {
@@ -281,7 +281,7 @@
       "label": "Han-Carlson, 42-bit",
       "space": "2**85",
       "status": "pass",
-      "seconds": 1.9,
+      "seconds": 1.6,
       "returncode": 0
     },
     {
@@ -297,7 +297,7 @@
       "label": "Baugh-Wooley array, ripple-carry final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 90.8,
+      "seconds": 85.5,
       "returncode": 0
     },
     {
@@ -313,7 +313,7 @@
       "label": "Baugh-Wooley array, Brent-Kung final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 120.4,
+      "seconds": 100.5,
       "returncode": 0
     },
     {
@@ -329,7 +329,7 @@
       "label": "Baugh-Wooley array, Kogge-Stone final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 94.3,
+      "seconds": 86.8,
       "returncode": 0
     },
     {
@@ -345,7 +345,7 @@
       "label": "Baugh-Wooley array, Sklansky final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 148.1,
+      "seconds": 73.6,
       "returncode": 0
     },
     {
@@ -361,7 +361,7 @@
       "label": "Baugh-Wooley array, Han-Carlson final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 114.4,
+      "seconds": 80.3,
       "returncode": 0
     },
     {
@@ -377,7 +377,7 @@
       "label": "Baugh-Wooley + Wallace, ripple-carry final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 112.0,
+      "seconds": 79.9,
       "returncode": 0
     },
     {
@@ -393,7 +393,7 @@
       "label": "Baugh-Wooley + Wallace, Brent-Kung final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 78.5,
+      "seconds": 85.4,
       "returncode": 0
     },
     {
@@ -409,7 +409,7 @@
       "label": "Baugh-Wooley + Wallace, Kogge-Stone final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 105.2,
+      "seconds": 107.1,
       "returncode": 0
     },
     {
@@ -425,7 +425,7 @@
       "label": "Baugh-Wooley + Wallace, Sklansky final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 82.3,
+      "seconds": 81.0,
       "returncode": 0
     },
     {
@@ -441,7 +441,7 @@
       "label": "Baugh-Wooley + Wallace, Han-Carlson final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 93.1,
+      "seconds": 98.7,
       "returncode": 0
     },
     {
@@ -457,7 +457,7 @@
       "label": "Booth radix-4 + Wallace, ripple-carry final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 71.7,
+      "seconds": 88.8,
       "returncode": 0
     },
     {
@@ -473,7 +473,7 @@
       "label": "Booth radix-4 + Wallace, Brent-Kung final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 76.5,
+      "seconds": 85.8,
       "returncode": 0
     },
     {
@@ -489,7 +489,7 @@
       "label": "Booth radix-4 + Wallace, Kogge-Stone final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 73.5,
+      "seconds": 91.1,
       "returncode": 0
     },
     {
@@ -505,7 +505,7 @@
       "label": "Booth radix-4 + Wallace, Sklansky final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 65.8,
+      "seconds": 75.8,
       "returncode": 0
     },
     {
@@ -521,7 +521,7 @@
       "label": "Booth radix-4 + Wallace, Han-Carlson final adder",
       "space": "2**16",
       "status": "pass",
-      "seconds": 68.3,
+      "seconds": 82.6,
       "returncode": 0
     }
   ]

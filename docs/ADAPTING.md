@@ -217,10 +217,17 @@ The contract a new architecture must meet:
 - Purely combinational, no state.
 
 Then widen the range check (`ARCH must be 0..4`), add the name to `ADDERS` in
-`scripts/run_ppa.py` and `scripts/plot_ppa.py`, add it to `ADDER_NAMES` in
-`test/test_arith.py`, and extend the `generate` loops in `test/tb_arith.v` and
-`test/tb_arith.sv` from 5 to 6. The equivalence test then compares your network
-against the other five and against Python integers at four widths.
+`scripts/run_ppa.py`, `scripts/plot_ppa.py` and `scripts/run_formal.py`, add it
+to `ADDER_NAMES` in `test/test_arith.py`, and extend the `generate` loops in
+`test/tb_arith.v` and `test/tb_arith.sv` from 5 to 6. The equivalence test then
+compares your network against the other five and against Python integers at
+four widths.
+
+`scripts/run_formal.py` is the one that is easy to forget and the one that
+matters most: a variant missing from `ADDERS` there gets no proof, and because
+the `formal` workflow compares a fresh run against the committed
+`docs/formal/summary.md`, an unproved variant leaves CI green. Add it, run
+`make formal`, and commit the regenerated summary with the rest.
 
 ## Adding a new multiplier architecture
 
@@ -245,9 +252,11 @@ The contract:
 
 Then add a branch to `npu_mult` that instantiates your generator and either
 `npu_csa_reduce` (tree) or the linear chain, widen the `MUL_ARCH` range check,
-and register the name in `scripts/run_ppa.py`, `scripts/plot_ppa.py` and
-`test/test_arith.py`. `test_multiplier_exhaustive` will then run all 65536
-signed operand pairs through it.
+and register the name in `scripts/run_ppa.py`, `scripts/plot_ppa.py`,
+`scripts/run_formal.py` and `test/test_arith.py`.
+`test_multiplier_exhaustive` will then run all 65536 signed operand pairs
+through it, and `make formal` will prove it against `a * b` once for each of
+the five final adders.
 
 ## Re-running the PPA comparison
 

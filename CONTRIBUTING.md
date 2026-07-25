@@ -9,8 +9,14 @@ quantized layer types, and tighter area.
 make lint        # verilator --lint-only -Wall, must be silent
 make arith       # exhaustive arithmetic bench, must print TB_ARITH PASS
 make test        # cocotb accelerator suite, no failures
+make formal      # only if you touched src/npu_adder.sv or the multiplier
 make ppa         # only if you touched arithmetic or geometry
 ```
+
+`make formal` needs `sby` and `z3` and takes about ten minutes. The `formal`
+workflow runs it on every push and fails if the regenerated
+`docs/formal/summary.md` differs from the committed one, so commit the
+regenerated file with the change that caused it.
 
 If a change affects area or timing, include the measured numbers. `make ppa`
 writes `docs/synth/ppa.md`; quote the lines that changed in the pull request

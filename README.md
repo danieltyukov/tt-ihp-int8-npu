@@ -15,9 +15,8 @@ Yosys against the real IHP `sg13g2` liberty, the post-route area, timing and
 signoff numbers come from a LibreLane run that reaches zero DRC and zero LVS
 errors, every arithmetic architecture is formally proved equal to its behavioral
 reference at the widths the design instantiates, and the figures are drawn from
-traces taken out of the running RTL.
-It is a hardened layout, not silicon: fabrication would still go through a Tiny
-Tapeout shuttle.
+traces taken out of the running RTL. It is a hardened layout, not silicon:
+fabrication would still go through a Tiny Tapeout shuttle.
 
 ![architecture](docs/img/architecture.svg)
 

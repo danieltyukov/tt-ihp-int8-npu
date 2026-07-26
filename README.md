@@ -484,10 +484,12 @@ The same RTL, hardened at each tile size and taken all the way to signoff. Runs:
 
 ## Clock target
 
-`clock_hz` is 40 MHz, and that number comes from OpenSTA on the mapped netlist
-against the IHP `sg13g2` liberty, not from an estimate. `make sta` reproduces it
-and writes [docs/synth/sta_typ.txt](docs/synth/sta_typ.txt) and
-[docs/synth/sta_slow.txt](docs/synth/sta_slow.txt).
+`clock_hz` is 40 MHz, and that number comes from OpenSTA on the post-synthesis
+mapped netlist against the IHP `sg13g2` liberty, not from an estimate. `make
+sta` reproduces it and writes [docs/synth/sta_typ.txt](docs/synth/sta_typ.txt)
+and [docs/synth/sta_slow.txt](docs/synth/sta_slow.txt). Every row of the table
+below is post-synthesis; the post-route slack from the hardening run is
+[+12.54 ns](#hardened-layout) at the same corner.
 
 | corner | worst setup slack at 25 ns | critical path | implied Fmax |
 | --- | --- | --- | --- |

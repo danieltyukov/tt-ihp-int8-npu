@@ -534,6 +534,24 @@ the requantized INT8 activations of layer 1 fed back in as the input to layer 2.
 
 ![confusion](docs/img/demo_confusion.png)
 
+The first two panels are the confusion matrices, and they are identical because
+quantization changed no prediction on any of the 359 held-out images. The third
+panel is why. For every one of the 3231 (sample, rival class) pairs it plots the
+float32 gap between the winning class and that rival against the amount
+quantization moves that pair, using the committed quantized model whose outputs
+`test_demo.py` shows the RTL reproduces bit-exactly. A prediction survives
+wherever the movement stays below the gap. Quantization is not a no-op here: it
+shifts the output layer by up to 0.85, which is 1.81 LSB of the 0.468 output
+scale. No pair crosses the line.
+
+Seven land exactly on it. Those are samples where two classes come out to the
+same INT8 code, so the winner is settled by the tie-break rather than by
+arithmetic, and `argmax` taking the lowest class index agrees with float32 in
+all seven. Breaking those ties the other way would change 7 of the 359
+predictions and give 0.8858 rather than 0.8830. The exact match of the two
+accuracies is therefore a property of this argmax convention as well as of the
+quantization, which is worth knowing before quoting a delta of zero.
+
 ![per class](docs/img/demo_per_class.png)
 
 ![histograms](docs/img/demo_histograms.png)

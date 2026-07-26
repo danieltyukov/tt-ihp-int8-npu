@@ -4,7 +4,9 @@
 """Draw the quantization figures from the demo model and the RTL trace.
 
 Produces:
-  docs/img/demo_confusion.png    float32 and INT8 confusion matrices side by side
+  docs/img/demo_confusion.png    float32 and INT8 confusion matrices side by
+                                 side, plus the decision margins that explain
+                                 why the two agree
   docs/img/demo_per_class.png    per-class accuracy, float32 against INT8
   docs/img/demo_histograms.png   activation distributions before and after
                                  quantization, for the input, the hidden layer
@@ -53,7 +55,76 @@ def style(ax, title: str, xlabel: str = "", ylabel: str = "") -> None:
     ax.tick_params(colors=C_TEXT, labelsize=8.5, length=0)
 
 
-def plot_confusion(res) -> None:
+def decision_margin(z):
+    """Per (sample, rival class) pair: the float32 gap and what quantization
+    does to it.
+
+    For the float32 winner `t` and any rival `j`, the INT8 network changes the
+    prediction exactly when the dequantized output of `j` overtakes `t`, that
+    is when `pert[j] - pert[t]` exceeds the float32 gap `logit[t] - logit[j]`.
+    Returns the gap, that adverse swing, and the per-class shift.
+    """
+    lg = z["logits_f"]
+    deq = (z["q_o_ref"].astype(float) - float(z["zp_o"])) * float(z["s_o"])
+    pert = deq - lg
+    top1 = lg.argmax(1)
+    gap, swing = [], []
+    for i in range(lg.shape[0]):
+        t = top1[i]
+        for j in range(lg.shape[1]):
+            if j != t:
+                gap.append(lg[i, t] - lg[i, j])
+                swing.append(pert[i, j] - pert[i, t])
+    return np.array(gap), np.array(swing), pert
+
+
+def plot_margin_panel(ax, z, diff, lsb: float) -> None:
+    """Third confusion panel: why quantization changes no prediction.
+
+    The obvious panel here is the confusion difference as a heat map, but the
+    difference is the all-zero matrix, and an all-zero heat map is a uniform
+    grey grid with no labels: correct, and indistinguishable from a broken
+    figure. The mechanism is the interesting part. Quantization does move the
+    output layer; the decision survives because the float32 gap to every rival
+    class is wider than the movement, and this panel shows the two against
+    each other.
+    """
+    gap, swing, pert = decision_margin(z)
+    tie = swing >= gap
+    flip = swing > gap
+
+    xs = np.logspace(np.log10(gap.min()), np.log10(gap.max()), 200)
+    ax.fill_between(xs, xs, max(swing.max(), gap.max()) * 1.2,
+                    color=C_ERR, alpha=0.09, linewidth=0)
+    ax.plot(xs, xs, color=C_ERR, linewidth=1.1)
+    ax.axhline(0, color=C_GRID, linewidth=0.8)
+    ax.scatter(gap[~tie], swing[~tie], s=5, color=C_I8, alpha=0.45,
+               linewidth=0)
+    ax.scatter(gap[tie], swing[tie], s=30, facecolor="none", edgecolor=C_ERR,
+               linewidth=1.2, zorder=3, label="exact INT8 tie")
+    ax.set_xscale("log")
+    # Headroom above the cloud for the annotation block, so it never sits on
+    # top of a data point.
+    ax.set_ylim(swing.min() - 0.25, swing.max() + 1.6)
+    style(ax, "Why no prediction changes",
+          "float32 gap, winner minus rival (log)", "INT8 swing of that pair")
+    # Top right: the point cloud stays below y = 1.05 and the shaded flip
+    # region hugs the left edge, so this is the only corner that is free.
+    ax.annotate(
+        f"{gap.size} (sample, rival) pairs\n"
+        f"{flip.sum()} cross the line, so no prediction flips\n"
+        f"{tie.sum()} land on it: an INT8 tie, broken by lower class index\n"
+        f"largest output shift {np.abs(pert).max():.2f} = "
+        f"{np.abs(pert).max() / lsb:.2f} LSB\n"
+        f"INT8 minus float32 confusion: 0 in all {diff.size} cells",
+        (0.97, 0.97), xycoords="axes fraction", va="top", ha="right",
+        fontsize=8, color=MUTED_ANN)
+    ax.annotate("rival wins", (0.045, 0.55), xycoords="axes fraction",
+                fontsize=8, color=C_ERR)
+    ax.legend(frameon=False, fontsize=8, loc="lower right")
+
+
+def plot_confusion(res, z) -> None:
     cf = np.array(res["confusion_float32"])
     ci = np.array(res["confusion_int8"])
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.6),
@@ -77,20 +148,7 @@ def plot_confusion(res) -> None:
                             else C_TEXT)
         fig.colorbar(im, ax=ax, fraction=0.046)
 
-    diff = ci - cf
-    lim = max(1, int(np.abs(diff).max()))
-    im = axes[2].imshow(diff, cmap="RdBu_r", vmin=-lim, vmax=lim)
-    axes[2].set_title("INT8 minus float32", fontsize=10.5, color=C_TEXT,
-                      loc="left", pad=8)
-    axes[2].set_xticks(range(10))
-    axes[2].set_yticks(range(10))
-    axes[2].tick_params(colors=C_TEXT, labelsize=8, length=0)
-    for i in range(10):
-        for j in range(10):
-            if diff[i, j]:
-                axes[2].text(j, i, f"{diff[i, j]:+d}", ha="center",
-                             va="center", fontsize=7, color=C_TEXT)
-    fig.colorbar(im, ax=axes[2], fraction=0.046)
+    plot_margin_panel(axes[2], z, ci - cf, res["quantization"]["output_scale"])
     fig.suptitle(f"Confusion matrices, {res['test_samples']} held-out images, "
                  f"{res['network']}", fontsize=11.5, color=C_TEXT, x=0.012,
                  ha="left")
@@ -205,7 +263,7 @@ def main() -> int:
     IMG.mkdir(parents=True, exist_ok=True)
     res = json.loads((REPO / "docs" / "demo_results.json").read_text())
     z = np.load(DATA / "demo_model.npz")
-    plot_confusion(res)
+    plot_confusion(res, z)
     plot_per_class(res)
     plot_histograms(z, res)
     plot_requant_error()

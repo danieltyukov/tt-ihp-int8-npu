@@ -26,11 +26,14 @@ the partial-sum chain line up without any extra skew registers. Column `c` of th
 array emits its complete dot product at the end of cycle `ROWS + c`, so results
 leave one column per cycle.
 
-![dataflow](img/dataflow.gif)
+![dataflow](img/dataflow_still.png)
 
-The animation above is one frame per clock cycle, taken from the running RTL:
-each PE shows its resident weight, the activation it is working on and its
-running partial sum.
+Four cycles of one array phase, taken from the running RTL: the wavefront
+arriving at cycle 2, five of the eight PEs live at cycle 4, all eight at cycle
+6, and the array draining at cycle 11 with both column results retired. Each PE
+shows its resident weight, the activation it is working on and its running
+partial sum. The repository carries the same trace as an animation, one frame
+per clock cycle, in `docs/img/dataflow.gif`.
 
 **Accumulation.** Column sums land in a bank of `COLS` accumulators per sample,
 24 bits wide, initialised with the bias exactly as a TFLite kernel does, with

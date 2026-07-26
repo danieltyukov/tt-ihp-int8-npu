@@ -7,6 +7,12 @@ Reads docs/data/dataflow.json (written by test/test_trace.py against the RTL)
 and renders docs/img/dataflow.gif: one frame per clock cycle, showing the
 activation register and partial sum of every PE, the skewed row inputs and the
 column results as they retire.
+
+Also renders docs/img/dataflow_still.png, the same trace as a static contact
+sheet. docs/info.md becomes a PDF datasheet and a PDF cannot animate: typst
+embeds the GIF's first frame, which is cycle 0 with the array idle, so the
+datasheet ended up illustrating the dataflow with a picture of nothing
+happening. The contact sheet picks its cycles out of the trace instead.
 """
 
 from __future__ import annotations
@@ -125,6 +131,52 @@ def draw_frame(d: dict, frame: dict, sample_of) -> Image.Image:
     return img
 
 
+def live_macs(d: dict, frame: dict, sample_of) -> int:
+    """PEs holding a live activation this cycle, by the same rule draw_frame
+    uses for the MAC counter it prints."""
+    return sum(1 for r in range(d["rows"]) for c in range(d["cols"])
+               if frame["a_reg"][r][c] != 0
+               and (r, frame["a_reg"][r][c]) in sample_of)
+
+
+def still_cycles(d: dict, sample_of) -> list[int]:
+    """Frame indices for the contact sheet: fill, mid-fill, peak, drain.
+
+    Read out of the trace rather than hard-coded, so a fork that resizes the
+    array still gets four cycles that show the wavefront arriving, every PE
+    busy, and results retiring.
+    """
+    macs = [live_macs(d, f, sample_of) for f in d["frames"]]
+    peak = macs.index(max(macs))
+    start = next(i for i, m in enumerate(macs) if m > 0)
+    # The last cycle that still has a live MAC, not the first one below peak:
+    # one PE short of full looks identical to full at a glance, whereas the
+    # tail shows the array emptying with the column results already retired.
+    tail = max(i for i, m in enumerate(macs) if m > 0)
+    picks = [start, (start + peak) // 2, peak, tail]
+    seen, out = set(), []
+    for i in picks:
+        if i not in seen:
+            seen.add(i)
+            out.append(i)
+    return out
+
+
+def contact_sheet(images: list[Image.Image]) -> Image.Image:
+    cols = 2 if len(images) > 1 else 1
+    rows = (len(images) + cols - 1) // cols
+    pad = 12
+    sheet = Image.new("RGB", (cols * W + (cols + 1) * pad,
+                              rows * H + (rows + 1) * pad), BG)
+    g = ImageDraw.Draw(sheet)
+    for i, im in enumerate(images):
+        x = pad + (i % cols) * (W + pad)
+        y = pad + (i // cols) * (H + pad)
+        sheet.paste(im, (x, y))
+        g.rectangle([x, y, x + W - 1, y + H - 1], outline=GRID)
+    return sheet
+
+
 def main() -> int:
     if not TRACE.is_file():
         print(f"{TRACE} missing: run `make trace` in test/ first")
@@ -142,6 +194,14 @@ def main() -> int:
                    loop=0, optimize=True)
     print(f"wrote {out} ({len(frames)} frames from {len(d['frames'])} "
           f"simulated cycles)")
+
+    picks = still_cycles(d, sample_of)
+    still = IMG / "dataflow_still.png"
+    contact_sheet([frames[i] for i in picks]).save(still, optimize=True)
+    print(f"wrote {still} (cycles "
+          f"{', '.join(str(d['frames'][i]['cycle']) for i in picks)}, "
+          f"{', '.join(str(live_macs(d, d['frames'][i], sample_of)) for i in picks)}"
+          f" of {d['rows'] * d['cols']} PEs live)")
     return 0
 
 

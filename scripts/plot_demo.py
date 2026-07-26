@@ -166,17 +166,31 @@ def plot_per_class(res) -> None:
     fig, ax = plt.subplots(figsize=(9.5, 4.2))
     ax.bar(x - 0.19, f32, width=0.38, color=C_F32, label="float32")
     ax.bar(x + 0.19, i8, width=0.38, color=C_I8, label="INT8")
+    changed = 0
     for i, (a, b) in enumerate(zip(f32, i8)):
         if abs(a - b) > 1e-9:
+            changed += 1
             ax.annotate(f"{b - a:+.3f}", (i, max(a, b)), ha="center",
                         va="bottom", fontsize=7.5, color=C_ERR,
                         xytext=(0, 2), textcoords="offset points")
     ax.set_xticks(x)
     ax.set_xticklabels([f"{c}\nn={m}" for c, m in zip(classes, n)])
-    ax.set_ylim(0, 1.12)
+    ax.set_ylim(0, 1.2)
+    # With no change anywhere there is no orange to see, and two bars of equal
+    # height read as one series drawn twice. Say which case this is instead of
+    # promising a colour that is not in the figure.
     style(ax, "Per-class recall, float32 against INT8 "
-              "(orange = change from quantization)", "digit class", "recall")
-    ax.legend(frameon=False, fontsize=9, ncol=2, loc="lower right")
+              + ("(orange = change from quantization)" if changed else
+                 "(identical for all 10 classes)"), "digit class", "recall")
+    if not changed:
+        # Above the bars, not over them: the tallest class reaches 1.0 and the
+        # limit is 1.2, so this band is empty.
+        ax.annotate("every pair of bars is equal: quantization changed no "
+                    "class's recall", (0.015, 0.985), xycoords="axes fraction",
+                    va="top", fontsize=8.5, color=MUTED_ANN, zorder=5)
+    # Upper right, where the 1.0 to 1.2 band is empty. At lower right the
+    # labels sat on top of the class 8 and 9 bars.
+    ax.legend(frameon=False, fontsize=9, ncol=2, loc="upper right")
     fig.tight_layout()
     fig.savefig(IMG / "demo_per_class.png", dpi=150)
     plt.close(fig)
